@@ -1,0 +1,1164 @@
+Thread: Kirchoffs law
+Post: Kirchoffs law
+Posted Date: 16 January 2019 13:37
+Status: Published
+
+The wording on slide 13 of the Thermal lecture explaining Kirchoffs law is unclear. It says "Kirchoffs law says that for each particular frequency then e=alpha. So for IR absorbtance we use e instead of the usual solar radiation alpha"
+
+What actually is Kirchoffs law? Does it simply mean that for IR frequencies e=alpha?
+
+Also on slide 28, why is the "waste heat rejected by the radiator" term on the side of the heat gain? Is it not heat being lost? Therefore shou ld be negative?
+
+Thanks
+
+Thread: Jan 2018 Q3c
+Post: RE: Jan 2018 Q3c
+Posted Date: 16 January 2019 14:28
+Status: Published
+
+Please note that the question is:
+
+Calculate the size of a flat solar array necessary to power a 1000W 3-axis stabilised nadir pointing Mercury Polar Orbiter. Make assumptions for the design of the solar array and state these clearly. (Distance of Mercury from Sun is given at the beginning of the paper).
+
+It says clearly that you should make assumptions (any reasonable ones will do) for solar panel efficiency and degradation factor . If you have done some calculations already you will be familiar with these values or you can just assume something sensible. You can work out the solar constant at mercury from the distance of Mercury from the sun given at the beginning of the paper.
+
+Thread: Jan 2018 Q3c
+Post: Jan 2018 Q3c
+
+Posted Date: 16 January 2019 10:30
+Status: Published
+
+OK
+
+Thread: Kepler Equation
+Post: RE: Kepler Equation
+Posted Date: 16 January 2019 14:23
+Status: Published
+
+Are you using radians or degrees? The formulae only work with radians .
+
+Thread: Kepler Equation
+Post: Kepler Equation
+Posted Date: 15 January 2019 19:20
+Status: Published
+
+Does the Kepler Equation (the set of three) not work up until the true anomaly is above pi or 180?
+
+I tried to calculate the time taken from Oto 210 on Example sheet 2 Q2, and ending up having a negative E hence negative time taken?
+
+Thread: Rocket Example Sheet
+Post: RE: Rocket Example Sheet
+Posted Date: 15 January 2019 19:23
+Status: Published
+
+I asked the same question a few days ago, and Lucy said this will not be examined .
+
+She also said that some of the questions on Example sheets are meant to stretch us out of our knowledge, so not necessary all question types on Example sheets are examinable.
+
+Thread: Rocket Example Sheet
+Post: Rocket Example Sheet
+Posted Date: 15 January 2019 18:24 
+Status: Published
+
+On the Rockets Example Sheet, the final question involves molecular masses and atomic weights to
+
+calculate the specific Impulse.
+
+Is this something we need to know how to do for the exam, as the learning objective just says to be able to use Specific Impulse in calculations, but I cannot find reference to calculations involving these
+j
+
+Thread: <MISSING>
+Post: RE: January 2017, Q3 b.)
+Posted Date: <MISSING>
+Status: Published
+
+Alright thanks a lot thats a great help
+
+Thread: January 2017, Q3 b.)
+Post: RE: January 2017, Q3 b.)
+Posted Date: 15 January 2019 17:11 
+Status: Published
+
+it sounds like 1368 has been used instead of 1370, certainly no katmos has been used, in fact if it is not mentioned then katmos=1. Equally if it is not mentioned that the spacecraft is spinning then Lp is assumed to be 1. It is very worthwhile to write these assumptions down at the beginning of your answer.
+
+Thread: January 2017, Q3 b.) 
+Post: January 2017, Q3 b.) 
+Posted Date: 15 January 2019 13:07 
+Status: Published
+
+Hi, in the January 2017 paper on question 3 part b, when it asks to calculate array area, in the solutions a value for 'S' is given as 1368. On the formula sheet however, Sis given by (1370/R"2)*katmos, so I'm wondering where the R"2/katmos term has gone. If this term is what turned 1370 into 1368, what was the value of katmos used (presuming R=1AU)?
+
+Also, how was Lp term allowed to be neglected or taken as 1 in this question?
+
+Thread: Thermal and case study
+Post: RE: Thermal and case study
+Posted Date: 15 January 2019 19:47 
+Status: Published
+
+Thanks you!
+
+
+Thread: Thermal and case study
+Post; <MISSING>
+Posted Date: 14 January 2019 15:04
+
+As always for a top mark you are expected to read around the topic and to extend your knowledge and skills over and above the notes and learning objectives. The CoM equation is an equation that it is assumed that you may know from your engineering mathematics topics and school qualifications. I will add it to the revision guide for next time for clarification.
+
+
+Thread: Centre of Mass of a system of bodies
+Post: Centre of Mass of a system of bodies
+Posted Date: 14 January 2019 13:03
+Status: Published
+
+Dear Lucy,
+
+Are we expected to know how to derive and calculate centre of mass for a systems of bodies as it isn't in the revision guide?
+
+Also, how closely will the questions in the exam align with what's in the revision guide? Because you have said in the past that what's in the revision guide is all we need to know.
+
+Many thanks,
+
+
+Thread: Eclipse
+Post: RE: Eclipse
+Posted Date: 14 January 2019
+Status: Published
+
+Thank you for this polite request and for spotting these slight inconsistencies.
+
+For the exam: 40-45 day eclipse seasons with a length of eclipse of 70-72mins (all of these numbers can be found in the literature) are all acceptable. I will make these more consistent next year.
+
+
+Thread: Eclipse
+Post: Eclipse
+Posted Date: 13 January 2019 23:24
+Status: Published
+
+Hi Lucy,
+
+I have a few points that I'm not sure regarding Thermal Balance.
+
+1) For the Thermal Balance equation, on the notes the view factors are Fp-sc, but on the pastpapers' formula sheets, the view factors are the other way around, Fsc-p. Why is that, and which one should I follow?
+
+2) For Space Radiator's equation, is it basically the same equation as the Thermal Balance equation, with an additional heat rejected term, Qw? Which way around do the view factors should be on this equation? rp-sc or ,sc-p?
+
+I hope I have made my questions clear and you could answer them on here for me. Thank you.
+
+Kind regards,
+
+
+Thread: Proving for Keplar Problem
+Post: RE: Proving for Keplar Problem
+Posted Date: 14 January 2019 10:41
+Status: Published 
+
+The learning objectives covered in the exam are covered in the revision guide, please have a look there and come back to me if it is not clear.
+
+Thread: Proving for Keplar Problem
+Post: Proving for Keplar Problem
+Posted Date: 13 January 2019 20:30 
+Status: Published
+
+Just to clarify from the email you sent us before regarding the non-examinable proving, do we need to be able to prove "solving the Keplar Problem"? The one which proves for the motion is planar, then prove for specific momentum, hence prove for K2 and K3?
+
+
+Thread: Queries on Rocket Example Sheet
+Post: RE: Queries on Rocket Example Sheet
+Posted Date: 14 January 2019 12:22
+Status: Published
+
+Thank you.
+
+Kind regards,
+Anson
+
+Thread: Two Body Problem 
+Post: RE: Two Body Problem
+Posted Date: 16 January 2019 09:12 
+Status: Published
+
+I have decided to stick with the 'Orbital Mechanics for Eng Students' version which is represented in the slides in Orbits 3. This means that equation 1-10 at the end of Orbits 1 should be positive instead of negative. You are quite right and I will correct this.
+
+Thread: Two Body Problem
+Post: Two Body Problem
+Posted Date:
+Status:
+
+13 January 2019 11:36 Published
+
+Hi,
+
+I'm a bit confused by the sign conventions used for the two body problem. In the first orbits lecture (fundamentals) on page 25 the equation (1·10) for the force exerted on a mass M2 by m1 is given. In the lecture on the two body problem on page 25 the same equation is given (3-4), however the sign changes. Is this a typo or is it to do with it being a different problem?
+
+Thanks
+
+
+Thread: Posted Date:
+
+Subsystems example sheet solutions, question 1b Status: Post:
+
+RE: Subsystems example sheet solutions, question 1b
+
+Author: • Lucy Berthoud
+
+Thanks Michail, you are correct!
+
+
+Thread: Posted Date:
+
+14January201910:06 Published
+
+13 January 2019 14:48
+
+Post: Author:
+
+RE: Antenna Reception
+
+• Lucy Berthoud
+
+Status: Published
+
+Dear all,
+
+Please remember to try and answer each other's questions.
+
+In comparing the standing wave pattern for the first harmonic with its single loop to the diagram of a complete wave, it is evident that there is only one-half of a wave stretching across the length of the string. That is, the length of the string is equal to one-half the length of a wave. More is here:
+
+htt f.)s:Llw w.w.pby_slcscl c1ssr QQ.ffi.rn mk lass/w.qY.f!S/Le _s_sQ.n.:.4LM a_tb em at ics Qt-Sti:1n ding -W c1ve s
+
+The yagi antenna has 1/4 wavelength elements, as it is usually a half wave dipole fed in the middle. In this way, the antenna consists of the feeder connected to two quarter wavelength elements in line with each other . See more here:
+
+Cut link
+
+
+Thread:
+Post:
+Author:
+
+Antenna Reception Antenna Reception
+
+• Kim Best
+
+Posted Date: Status:
+
+12 January 2019 15:38 Published
+
+Hi,
+
+When explaining how half dipole antennas receive signals, it's mentioned in the slides that because the length of the antenna is half a wavelength long, a standing wave is produced. Could you explain that relation between half wavelengths and standing waves please? Does this also lead to similar reasoning as to why the Yagi antenna has 1/4 wavelength elements?
+
+Thanks
+
+
+Thread:
+Post:
+Author:
+
+January 2016 QS.b
+
+RE:January 2016 QS.b
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+11 January 2019 13:17
+
+Published
+
+This first comes up in the rocket propulsion and launchers lectures.
+
+
+Thread: January 2016 QS.b
+
+Posted Date:
+
+11 January 2019
+
+Thread:
+Post:
+Author:
+
+Kepler equation Kepler equation
+
+Posted Date: Status:
+
+09 January 2019 15:26 Published
+
+In the revision guide it states that we should be able to quote the Kepler equation but it also lists it as one of the equations given to us in the exam. Will we be given it in addition to the equations for mean motion and eccentric anomaly? Also, will we be expected to explain what each of the terms in the equation mean, or simply be able to calculate and use them? Thanks
+
+
+Thread:
+Post:
+Author:
+
+January 2018 Q2(d)
+
+RE: January 2018 Q2(d)
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+11 January 2019 13:25 Published
+
+Yes, there appears to be a rather heavy rounding effect, as when i recalculate it I get a=6717160m. However I don't think this is enough to cause your error. Unfortunately I am struggling to read your writing and the scan is sideways, perhaps you could rewrite this clearly for me and the right way up and I can have a look?
+
+
+Thread:
+Post:
+Author:
+
+January 2018 Q2(d)
+
+January 2018 Q2(d)
+
+09 January 2019 10:53 Published
+
+Hi
+
+Just to make sure is there a calculation mistake here or the value has been rounded?
+
+Thread:
+
+Two body derivation and centre of mass calcs
+
+Post:
+
+RE: Two body derivation and centre of mass calcs
+
+Author: • Rhys Williams
+
+Posted Date: Status:
+
+16 January 2019 12:37 Published
+
+Thanks for your answer. What implications does this then have for numerical examples such as the one on slide 18,19,and 20? Does the approach taken on this question not use the version you have rejected?
+
+
+Thread:
+
+Two body derivation and centre of mass calcs
+
+Post:
+
+RE: Two body derivation and centre of mass calcs
+
+Author: • Lucy Berthoud
+
+Posted Date: Status:
+
+16 January 2019 09:11 Published
+
+Yes, apologies, I have been going through this with a fine toothed comb, there are many conflicting representations of this very widely treated problem. I have decided to stick with the 'Orbital Mechanics for Eng Students' version which is represented in the slides in Orbits 3. This means that equation 1-10 at the end of Orbits 1 should be positive instead of negative. I will correct this. It is all about which direction you assume r is in.
+
+
+Thread:
+
+Two body derivation and centre of mass calcs
+
+Post:
+
+RE: Two body derivation and centre of mass calcs
+
+Author: • Rhys Williams
+
+Posted Date: Status:
+
+14 January 2019 13:56 Published
+
+Hi, has there been any progress in addressing this question? I think it has also been posed by another student in a separate thread
+
+
+Thread:
+
+Two body derivation and centre of mass calcs
+
+Post:
+
+RE: Two body derivation and centre of mass calcs
+
+Author: • Rhys Williams
+
+Posted Date: Status:
+
+09 January 2019 12:55 Published
+
+
+Thread:
+Post:
+Author:
+
+Vernal Equinox
+
+RE: Vernal Equinox
+
+Posted Date: Status:
+
+09 January 2019 13:09
+
+Published
+
+Thanks for your reply. In that case does the ECI reference system use the first point of Aries as the reference direction rather than the Vernal Equinox, as is stated on slide 14 of Orbits 27
+
+The notes define the first point of Aries as "the point where the equatorial meets plane meets the ecliptic". Will this be correct if we are asked to definite it in the exam? Or should we mention something along the lines of "it is the position of the Sun relative to Earth at the Vernal Equinox"? But neither of those definitions mention that is a vector, as is stated on slide 8 of Orbits 27
+
+Essentially I understand the concept, but would like to know the specific wording that will gain the marks in the exam if this question is asked.
+
+Thanks
+
+
+Thread:
+Post:
+Author:
+
+Vernal Equinox RE: Vernal Equinox
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+08 January 2019 18:29
+
+Published
+
+Yes, I am afraid it is common to do this. But strictly, the Vernal equinox is a point in time (note: March 20/21, not 31st). Your definition is not quite sufficient, as it is not just any fixed celestial point, you may find that this is a helpful webpage for· the definitions and some diagrams:
+
+
+Thread:
+Post:
+Author:
+
+Vernal Equinox Vernal Equinox
+
+• Rhys Williams
+
+Posted Date: Status:
+
+08 January 2019 11:10
+
+Published
+
+In the notes the Vernal Equinox seems to be referred to as both a direction (vector) and a point in time (March 31st). Online sources tend to refer to it as a instant in time. Which is it's definition? If it is a point in time, does the ECI reference frame actually use the first point of Aries as the reference direction? Also, is the definition "Vector through Earth to fixed celestial point" sufficient for the first point of Aries? Thanks
+
+
+Thread:
+Post:
+Author:
+
+Kepler problem Kepler problem
+
+Posted Date: Status:
+
+06 January 2019 20:46 Published
+
+Apart from from showing that the motion is planar, so we need to know how to do any of the other steps in solv ing the kepler problem?
+
+
+Thread:
+Post:
+Author:
+
+January 2016 Q4(b)(i)
+
+RE: January 2016 Q4(b)(i)
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+06 January 2019 18:49 Published
+
+Yes, you are quite right, this question was set incorrectly . The information was given out during the exam. It should have read:
+
+lfthc antenna receiver gain is 36dBi, what is the signal strength at the receiving antenna output?
+
+
+Thread:
+Post:
+Author:
+
+January 2016 Q4(b)(i)
+
+January 2016 Q4(b)(i)
+
+Posted Date: Status:
+
+06 January 2019 17:52 Published
+
+The question asks to calculate signal strength at receiving antenna output or Pr. Pr is given by EIRP+Gr­ Lp. Nowhere in the question the value of Gr is given but in the solution a value of 36dBW has been used. How this value is achieved and where it came from in this context?
+
+
+Thread:
+Post:
+Author:
+
+Test yourself Orbit7 question 3 Posted Date:
+
+RE: Test yourself Orbit7 question 3 Status:
+
+15 January 2019 13:56 Published
+
+Hi Lucy,
+
+I am still confused by this topic. On slide 6 of Orbits 7 lecture, one of the general principles of manouevres is that initial and final orbits intersect at the point where the impulse is applied. Therefore why is the inclination change burn not performed at one of the nodes, as this is where the inclination is measured from and the planes will untimately intersect?
+
+The notes also state that the" burn must take place where the initial and final planes intersect (the
+
+Thread:
+Post:
+Author:
+
+True anomaly
+
+RE: True anomaly
+
+Posted Date: Status:
+
+14 January 2019 11:59
+
+Published
+
+You can still work out where the ascending and descending nodes are from the right ascension of the ascending node can't you? Giving you the position of the ascending node, then the descending node is 180 degrees from there?
+
+
+Thread:
+Post:
+Author:
+
+True anomaly Posted Date:
+
+RE: True anomaly Status:
+
+07 January 2019 03:04
+
+Published
+
+Thank you so much. It helps a lot
+
+
+Thread:
+Post:
+Author:
+
+True anomaly
+
+RE: True anomaly
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+06January 201918:38
+
+Publi shed
+
+This is where it is important that you write down your assumptions. If you have not been given the argument of perigee then you cannot work out where the ascending and descending nodes are. See diagram Tr 1g_.i1J.lQIDi!ly.JP
+
+
+Thread:
+Post:
+Author:
+
+True anomaly Posted Date:
+
+True anomaly Status:
+
+04 January 2019 17:16
+
+Published
+
+From my understanding, true anomaly is measured from the perigee to wherever the satellite is. For example, the true anomaly at the apogee will be 180 degree. My question is if there is no argument of perigee, what will be the true anomaly at the ascending node and descending node?
+
+
+With regards to the 5th line on the attached image,I would like to know where the 0.37 comes from. is this Earth's albedo? Was this supposed to have been given in the question, as albedo values do vary?
+
+Thanks and HNY!
+
+Attachment: CJ Sc reensho t_20181231- 220822 _Black board.jpg (646.92 KB)
+
+
+Thread:
+Post:
+Author:
+
+Spatial Resolution RE: Spatial Resolution
+
+Posted Date : Status:
+
+02 January 2019 14:59
+
+Published
+
+Thanks a lot thats cleared that up nicely for me :)
+
+
+Thread:
+Post:
+Author:
+
+Spatial Resolution
+
+RE: Spatial Resolution
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+01 January 2019 17:50
+
+Pu blished
+
+At small angles, sin (theta) approximates to tan (theta), there is more explanation on tbis_p_Q.Sl_b._e_r_e .
+
+
+Thread:
+Post:
+Author:
+
+Spatial Resolution Spatial Resolution
+
+Posted Date: Status:
+
+31 December 2018 15:05
+
+Published
+
+Hi,
+
+I'm having trouble understanding the trig with the resolution equation s=d*sin(theta)
+
+From the diagram in the slides we can see that dis the adjacent side ands the opposite to the angle.
+
+As sin(theta)=opp/hyp, shouldn't d therefore be the hypotenuse on the diagram for the resolution equat ion to be valid, or alternatively shouldn't the resolution equation instead use tan(theta) (wh ich would use the adjacent as length d as the diagram does).
+
+Thanks
+
+
+when computing the thrust in space, why it is possible to assume that Pe has the same value as the sea level atmospheric pressure?
+
+Finally, in question 3c) of the same example sheet, when it says "assume the spacecraft performs the inclination change independently of the transfer to the final elliptical orbit", does that mean the inclination change burn is done at the most advantageous location in terms of delta V?
+
+Thank you in advance.
+
+
+Thread:
+
+deriving magnitude of h (specific angular momentum)
+
+Post:
+
+RE: deriving magnitude of h (specific angular momentum)
+
+Author: • Lucy Berthoud
+
+Posted Date: Status:
+
+0 I January 2019 17:26 Published
+
+Yes, this also true (and is the same as what we have done), so no problem with writing this down.
+
+
+Thread:
+
+deriving magnitude of h (specific angular momentum)
+
+Post:
+
+deriving magnitude of h (specific angular momentum)
+
+Posted Date: Status:
+
+27 December 2018 20:05 Published
+
+Author: •
+
+In the slides for "orbits 4" there is a few slides dedicated to finding magnitude of h using geomet ry, I was wondering if we would get marked down if in the exam we derived it by stating h = moment of inertia* angular velocity, and then stating for specific angular momentum I= r"2. Thereby giving us h
+
+= r"2*omega?
+
+
+Thread: Post:
+
+Thermal transfer slide questioms Posted Date:
+
+Status:
+
+28 December 2018 11:14 Pub lished
+
+RE: Thermal transfer slide questioms
+
+Author: • Lucy
+
+Thread:
+Post:
+Author:
+
+Deployment of GEO Deployment of GEO
+
+Posted Date: Status:
+
+11 December 2018 23:27 Published
+
+When we launch a geostationary satellite into orbit, when do we start the deployment? Moreover, why does the deployment only happen once in a GEO?
+
+
+Thread:
+
+AOCS - Gravity Gradient Stabilization
+
+Post:
+
+RE: AOCS - Gravity Gradient Stabilization
+
+Author: •
+
+Posted Date: Status:
+
+14 January 2019 09:31 Published
+
+Thank you for your explanation.
+
+
+Thread:
+
+AOCS - Gravity Gradient Stabilization
+
+Post:
+
+RE: AOCS - Gravity Gradient Stabilization
+
+Author: • Andres Marcos (instructor)
+
+Posted Date: Status:
+
+13 December 2018 12:46 Published
+
+A basic search in Google for "gravity gradient spacecraft stabilization" yields the ever present wikipedia entry (https://en.wikipedia.org/wiki/Gravity-gradient_stabilization), which should always be taken with a pinch of salt, and several more technical descriptions (for example, https://www.jhuapl.edu/techdigest/views/pdfs/V03_N5_1964/V3_N5_ 1964_Fischell.pdf).
+
+The idea is always that if something (i.e. gravity force) is pulling you along one axis then when you deviate from this axis lateral components of that force are generated which bring you back to the initial position (unless you intentionally apply a force opposing this restoring motion).
+
+Also note that "tidal" does not mean sea movement in this case. best
+
+andres
+
+
+On the lecture notes, it says the 3-axis control using separate actuations per principle axis, and it says this is complex and costlier. Why are most spacecrafts still use this type of attitude control system today?
+
+
+Thread:
+Post:
+Author:
+
+Thank you.
+
+
+Thread:
+Post:
+Author:
+
+AOCS - Translation Actuators Posted Date:
+
+RE: AOCS - Translation Actuators Status:
+
+• Andres Marcos
+
+13 December 2018 12:51 Published
+
+Dear Anson
+
+There is nothing deliberate about this, there are physical/engineering/chemical reasons for this. It does take always time from the moment you start a process until the moment it occurs (especially if there are chemical reactions involved or any mechanical operation), e.g. you cannot accelerate your car from Oto 100 Km/s just in the moment you press the accelerator.
+
+regards andres
+
+
+Thread:
+Post:
+Author:
+
+AOCS - Translation Actuators AOCS - Translation Actuators
+
+Posted Date: Status:
+
+11 December 2018 23:14 Published
+
+For devices working on a minimum control impulse (impulse bit), why is the thrust available being made very limited deliberately?
+
+
+Thread: AOCS - Dynamic Properties
+
+Posted Date:
+
+14 January 2019 09:19
+
+Thread:
+Post:
+Author:
+
+Example sheet 3 question 4
+
+RE: Example sheet 3 question 4
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+07 December 2018 17:48 Published
+
+Adding more hydrogen means that the overall Molecular mass 'M' of the mixture will be reduced from 18 to 10 and then the speed is affected according to the equation for ve2 (see solutions) as it is
+
+proportional to 1/M
+
+
+Thread:
+Post:
+Author:
+
+Example sheet 3 question 4
+
+Example sheet 3 question 4
+
+• Pete Doherty
+
+Posted Date: Status:
+
+26 November201819:21 Published
+
+On question 4, I don't understand how adding hydrogen lowers the molecular mass and therefore increases the speed?
+
+Many thanks, Pete.
+
+
+Thread:
+Post:
+Author:
+
+Coursework Q1
+
+RE: Coursework Q1
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+15 November 2018 18:37 Published
+
+In the future, you will be asked to summarise many things in a limited number of words, frequently in less than 400words, part of this exercise is to provide you with practice for this. If you are using Word, it has a word counter in the 'review' tab, you can this to count the words automatically.
+
+
+Thread:
+Post:
+Author:
+
+Coursework Q1 Coursework Q1
+
+Posted Date: Status:
+
+15 November 2018 15:59 Published
+
+Hi there,
+
+called 'patched conics' (which includes a Hohmann transfer in the middle) is used to give an indication of the result and it would not be appropriate to use a simple Hohmann transfer. I hope this helps.
+
+
+Thread: Post : Author:
+
+coursework part1 wursework part1
+
+Posted Date: Statu5:
+
+13 November 2018 19:05 PL1bl ish ed
+
+Hello,
+
+If the mission I choose adopts different transfer rather than Hohmann transfer, can I still apply Hohmann transfer methods in my report to make deductions and comparison?
+
+Thank you.
+
+
+Thread:
+Post:
+Author:
+
+GMAT Components of Velocity Posted Date:
+
+RE: GMAT Components of Velocity Status:
+
+• Lucy Berthoud
+
+15 November 2018 10:00 Published
+
+Zero values are perfectly fine and not silly at all if they are your results.
+
+
+Thread:
+Post:
+Author:
+
+GMAT Components of Velocity
+
+GMAT Components of Velocity
+
+Posted Date: Status:
+
+13 November201816:17 Published
+
+In the target operations, the three velocity components can be created by using the "Vary" option three times. For the first burn of the Hohmann transfer, the iterating process then outputs a burn in three deltaV components where the V and B components are non-zero.
+
+I thought that burning in the B component was inefficient (I'm burning at Apoapsis) - So is it acceptable to only use one "Vary" in the V component at this stage? This would then give two zero values for N and B components of deltaV which looks a bit silly in the table provided in the coursework template which has three columns.
+
+
+Thread: coursework q2 Posted Date: 15 November 2018 09:58
+
+I am afraid I cannot help you with solutions to the coursework.
+
+
+Thread:
+Post:
+Author:
+
+Course work Task 3 Course work Task 3
+
+Posted Date: Status:
+
+11 November 2018 11:38 Published
+
+01. In the missions tab, do we need to have an 'achieve' command for transfer orbit?
+
+02. In the end, adding an 'Achieve' command to get an ecc=O leads to no convergence. whereas, on removing that achieve command significant convergence is obtained. What would be more preferred between the 2 cases?
+
+
+Thread:
+Post:
+Author:
+
+Submission
+
+RE: Submission
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+12 November 2018 09:33 Published
+
+Turntin provides a% similarity for plagiarism purposes when you submit your work. We will look at each piece of work and if it is clear that the similarity is due to the questions being repeated between all the papers, then there is no problem. If the text has clearly been copied from the internet or someone else's work then the usual University plagiarism procedure is invoked.
+
+
+Thread:
+Post:
+Author:
+
+Submission Submission
+
+Posted Date : Status:
+
+10 November 2018 22:46 Published
+
+What is an acceptable range for the similarity percentage when you submit??
+
+
+Thread:
+Post:
+Author:
+
+Coursework part 1
+
+RE: Coursework part 1
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+10 November 201813:48 Published
+
+01. A company's website could be past, present or future. Have you tried looking for the mission on
+
+Post: Author:
+
+Coursework task-3
+
+•
+
+Status: Published
+
+The question doesn't seem to contain the value for eccentricity. Are we supposed to assume the orbit to be circular?
+
+(1--'ost is 1-<ead)
+
+Thread:
+Post:
+Author:
+
+Coursework part 3
+
+RE: Coursework part 3
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+15 November 2018 11:39 Published
+
+Sorry to be confusing, but it would be helpful for us if you could paste the WHOLE GMAT script in to the coursework, not just the mission section. I realise this is long, but otherwise we may not know what parameters you have called.
+
+
+Thread:
+Post:
+Author:
+
+Coursework part 3
+
+RE: Coursework part 3
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+09 November 2018 15:23 Published
+
+Yikes, sorry, yes, just the mission sequence please.
+
+
+Thread:
+Post:
+Author:
+
+Coursework part 3
+
+Coursework part 3
+
+Posted Date: Status:
+
+09 November 2018 09:19 Published
+
+For our GMAT script submission, would you like the whole script copy and pasted (which is around 200 lines) or just the mission sequence section? Thanks
+
+
+Thread:
+Post:
+Author:
+
+Coursework task1 RE: Coursework taskl
+
+• Lucy Berthoud
+
+Posted Date: St
+
+09 November 201815:24 Published
+
+The aim is to apply the knowledge that you have already learned in the course. If you can do this with
+
+
+Thr ead: Post: Author:
+
+Eccentricity?
+
+RE: Eccentricity?
+
+• Lucy Berthoud
+
+Posted Date: St illt Ui :
+
+05 November 2018 16:52 Publishild
+
+Well done for spotting this! I am checking in to how I did this. We have to be careful not to assume a result that we are deducing...
+
+
+Thread:
+Post:
+Author:
+
+Eccentricity? RE: Eccentricity?
+
+Posted Date: Status:
+
+30 October 2018 12:58 Published
+
+And also thus can we conclude that -(bA2/aA2)= (2Eh 112)/(m µ A2) ? Thank you:)
+
+
+Thread:
+Post:
+Author:
+
+Eccentricity? Eccentricity?
+
+Posted Date: Status:
+
+30 October 2018 12:56 Published
+
+From the Annex, it is said that the eccentricity is equal to [1+(2EhA2 )/(m µ A2)] 11(1/2), and in mathematic the eccentricity is [1-(b112/a112)]11(1/2). I was wondering how one would get to the conlcusion that the eccentricity would be [1+(2eh112)/(µ 112) ]11(1 /2).
+
+Was it by comparison, from the derivation that r=(hA2/ µ)/{1+[1+(2eh112)/(µ 112)]11(1/2)cos8} and the mathmatical equation for a conic section r=p/(1+ecos 8), thus p= (hA2/µ) and that e=
+
+[1+(2eh112)/(µ 112}JA(1/2) 7
+
+
+Thread:
+Post:
+Author:
+
+Coursework-Task 1
+
+RE: Coursework-Task 1
+
+• Lucy Berthoud
+
+Posted Date: Status:
+
+28 October 2018 12:08 Published
+
+Dear Tanuj, You are not restricted to the Earth, but the aim of this coursework is to apply the principles of orbital mechanics that you have already learn ed. If you wish to apply them to a non-Earth mission
+
+
+Thread:
+Post:
+Author:
+
+Coursework Query Coursework Query
+
+18 October 201818:31
+
+Published
+
+In the coursework brief it says we can " elect any mir;r;ionr; under development or proposed for development"; does this mean we cannot choose missions that have already been completed or that are currently live? Thanks!
+
+
+Thread:
+Post:
+Author:
+
+Floating in space and gravity Posted Date:
+
+RE: Floating in space and gravity Status:
+
+• Lucy Berthoud
+
+28 October 2018 12:30
+
+Published
+
+Thank you for this excellent question and my apologies for the delay, I have only just seen that I was not subscribed to the discussion threads (aargh)! The reason why astronauts appear to float in space, is that they are in 'freefall' i.e. they are freely falling around the Earth in their spacecraft. Some links to explain this better:
+
+• hllps;LJ ovl<tud1e nce/fro 11 tl 15-.8/f .01!1.Les/.nr1':>a-kn ow al -1s-m1crogr_
+
+5.8....blml
+
+• hJtps://www.ncJ.sa.gov/cent_exs/gl enn/sh_uttlestati oo.lstati on/micr _ogex.html Let me know if you need more explanation.
+
+
+Thread:
+Post:
+Author:
+
+Floating in space and gravity Floating in space and gravity
+
+Posted Date: Status:
+
+14 October 2018 13:50
+
+Published
+
+In the last lecture we have seen that even if the variation of g with altitude is significant for space, it is still quite above what we could call "microgravity". If the g reduction is not that meaningful, why do we float in space? Which is the correct explanation for that? Thank you.
+
