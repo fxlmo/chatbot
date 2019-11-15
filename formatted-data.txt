@@ -1,0 +1,31 @@
+The wording on slide 13 of the Thermal lecture explaining Kirchoffs law is unclear. It says "Kirchoffs law says that for each particular frequency then e=alpha. So for IR absorbtance we use e instead of the
+usual solar radiation alpha"
+What actually is Kirchoffs law? Does it simply mean that for IR frequencies e=alpha?
+Also on slide 28, why is the "waste heat rejected by the radiator" term on the side of the heat gain? Is it not heat being lost? Therefore should be negative?
+Thanks
+
+Please note that the question is: Calculate the size of a flat solar array necessary to power a to 1000W stabilised nadir pointing Polar Orbiter. Make assumptions for the design of the solar array and state these clearly. Distance of Mercury from Sun is given at the beginning of the paper).
+It says clearly that you should make assumptions (any reasonable ones will do) for solar panel efficiency and degradation factor. If you have done some calculations already you will be familiar with these values or you can just assume something sensible. You can work out the solar constant at mercury from the distance of Mercury from the sun given at the beginning of the paper.
+
+Values such as the solar constant at mercury, the efficiency of gallium arsenide and the radiation degradation factor are used in the solutions but are not provided in the the question or in the list of constants, are we expected to remember them or has this changed from last year?
+Thanks
+
+Okay, I see.  I think I will use the K3 equation when it is above pi. It is just easier for me to understand and use.  Thanks for your explanation.
+
+I had the same problem initially. For the example sheet, you need to take the positive value of E instead of the negative one (there are 2 solutions to E).As for the question in the 2017 paper, if you look at how the eccentric anomaly is calculated, its easy to see that when the true anomaly goes up to pi, the eccentric anomaly will be similar to pi. Hope that helps.
+
+I was using radians.  The same happened in 2017 past paper, Q2(c). When the true anomaly goes up to pi, the left hand side of the equation becomes tan(pi/2), which gives infinity.  From what I'm guessing, when the true anomaly goes at or above pi, we need to use the Newton form of K3 to work out time taken using geometry
+
+Are you using radians or degrees? The formulae only work with radians.
+
+Does the Kepler Equation (the set of three) not work up until the true anomaly is above pi or 180?  I tried to calculate the time taken from 0 to 210 on Example sheet 2 Q2, and ending up having a negative E hence negative time taken?
+
+I asked the same question a few days ago, and Lucy said this will not be examined.  She also said that some of the questions on Example sheets are meant to stretch us out of our knowledge, so not necessary all question types on Example sheets are examinable.
+
+On the Rockets Example Sheet, the final question involves molecular masses and atomic weights to calculate the specific Impulse.  Is this something we need to know how to do for the exam, as the learning objective just says to be able to use Specific Impulse in calculations, but I cannot find reference to calculations involving these anyvvhere else. Thank you!
+
+Ahh I see. Putting Tl and T2 into the Newton form of K3 and then manipulate. Thank you very much.
+
+Just write them out for each case: Tl and T2 and then divide one by another and cancel etc.
+
+Just wondering how do we get the relation: (M+m1)/(M+m2)=(T2/T1)^2*(a1/a2)^3? Thank you.
