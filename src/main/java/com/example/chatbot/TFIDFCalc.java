@@ -7,12 +7,11 @@ import java.util.ArrayList;
 //Returned value will be lower if it appears in a lot of documents (ie is not unique)
 public class TFIDFCalc {
 
-    // TERM FREQUENCY
-    // Inputs:
-    // - document: Whole sentence of text (thread in our case)
-    // - word: Word of which we want the tf (term frequency of
-    // Returns:
-    // - The frequency the word appears in the document (ignoring the case)
+    /** TERM FREQUENCY
+     * @param document  Whole sentence of the thread
+     * @param word      Word we want the tf of
+     * @return          Frequency of word in document (case insensitive)
+     */
     public int tf(ArrayList<String> document, String word) {
         int result = 0;
         for (String w : document)  {
@@ -24,12 +23,12 @@ public class TFIDFCalc {
         return result;
     }
 
-    // INVERSE DOCUMENT FREQUENCY
-    // Inputs:
-    // - documents: List of documents to check
-    // - word: Word of which we want to test the idf of
-    // Returns:
-    // - The relative frequency of a word in other documents (kind of like how often it appears in other documents)
+    /**
+     * INVERSE DOCUMENT FREQUENCY
+     * @param documents List of documents to check
+     * @param word      Word we want to test the idf of
+     * @return          Relative frequency of word in other documents
+     */
     public double idf(ArrayList<ArrayList<String>> documents, String word) {
         double result = 0;
         int n = 0; //number of documents with word in
@@ -44,13 +43,13 @@ public class TFIDFCalc {
         return result;
     }
 
-    // FULL FUNCTION
-    // Inputs:
-    // - documents: List of documents
-    // - document: document containing word
-    // - word: word that we want to check
-    // Returns:
-    // - The full tf-ifd of a word in a document with respect to some documents (threads)
+    /**
+     * FULL FUNCTION
+     * @param documents List of documents
+     * @param document  Document containing the word to check
+     * @param word      Word to check
+     * @return          Full TF-IFD of a word in a document with respect to some documents
+     */
     public double tfidf(ArrayList<ArrayList<String>> documents, ArrayList<String> document, String word) {
         return tf(document, word) * idf(documents, word);
     }

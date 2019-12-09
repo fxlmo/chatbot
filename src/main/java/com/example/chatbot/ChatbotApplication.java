@@ -6,12 +6,19 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.ServerAddress;
+import com.mongodb.MongoCredential;
+import com.mongodb.MongoClientOptions;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -52,14 +59,17 @@ public class ChatbotApplication implements CommandLineRunner{
 		//}
 
 		// Keyword stuff
+		//loop through each document and calculate td-idf of each keyword
 		// TODO: parse into thread id, date, etc. This part of the algorithm should only receive
 		// TODO: the body of each thread to get keywords out
+
+		
+
 		ArrayList<ArrayList<String>> documents = new ArrayList<ArrayList<String>>();
+
+		//collect the filenames of all of the files inside the './threads/' folder
 		final File folder = new File("./threads/");
 		documents = listFilesForFolder(folder);
-
-		//loop through each document and calculate td-idf of each keyword (in theory)
-		// for now I'm just going to look at one document and see what happens
 
 		//remove punctuation from each word in the document (makes things easier to process)
 		int i = 0;
@@ -76,21 +86,78 @@ public class ChatbotApplication implements CommandLineRunner{
 			i++;
 		}
 
+		ArrayList<ArrayList<String>> keyList = new ArrayList<ArrayList<String>>();
 		TFIDFCalc keywordCalc = new TFIDFCalc();
-		final int testIndex = 4;
-		System.out.println(documents.get(testIndex));
-		ArrayList<String> keyWords = new ArrayList<>();
-		for (String word : documents.get(testIndex)) {
-			double freq = keywordCalc.tfidf(documents, documents.get(testIndex), word);
-			System.out.println("TF-IDF of " + word + " = " + freq);
-			if (freq > 1.5) {
-				keyWords.add(word);
+		for (int testIndex = 0; testIndex < documents.size(); testIndex++) {
+			//System.out.println(documents.get(testIndex));
+			ArrayList<String> keyWords = new ArrayList<>();
+			double avg = 0;
+			int n = 0;
+			for (String word : documents.get(testIndex)) {
+				double freq = keywordCalc.tfidf(documents, documents.get(testIndex), word);
+				//System.out.println("TF-IDF of " + word + " = " + freq);
+				avg += freq;
+				n++;
+				//Threshold is here, change accordingly (average of tf-idf seems to be around
+				//1.5-2.5 depending on the document, but this will change when we add more.
+				if (freq > 2) {
+					keyWords.add(word);
+				}
+			}
+			ArrayList<String> tempKeyWords = new ArrayList<>();
+			for (String word : keyWords) {
+				if (!tempKeyWords.contains(word)) {
+					tempKeyWords.add(word.toLowerCase());
+				}
+			}
+			keyList.add(tempKeyWords);
+		}
+		boolean quit = false;
+		System.out.println("Hi, how can I help?");
+		while (!quit) {
+			Scanner in = new Scanner(System.in);
+			String s = in.nextLine();
+			String[] sList = s.split(" ");
+			if (s.equals("quit")) {
+				quit = true;
+			} else {
+				for (String word : sList) {
+					newDocument.add(word.replaceAll("[^a-zA-Z0-9]", ""));
+				}
+				ArrayList<String> wordList = new ArrayList<>(newDocument);
+				documents.add(new ArrayList<>(wordList));
+				ArrayList<String> keyWords = new ArrayList<>();
+				for (String w : wordList) {
+					double freq = keywordCalc.tfidf(documents, wordList, w);
+					//Threshold is here, change accordingly (average of tf-idf seems to be around
+					//1.5-2.5 depending on the document, but this will change when we add more.
+					if (freq > 1) {
+						keyWords.add(w.toLowerCase());
+					}
+				}
+				int currentMax, index, maxMatch;
+				index = currentMax = maxMatch = 0;
+				for (ArrayList<String> keyWordsi : keyList) {
+					int matching = 0;
+					for (String w : keyWords) {
+						if (keyWordsi.contains(w.toLowerCase())) {
+							matching++;
+						}
+					}
+					if (matching > maxMatch) {
+						currentMax = index;
+					}
+					index++;
+				}
+				System.out.println("most closely matching thread is " + documents.get(currentMax));
 			}
 		}
-
-		System.out.println("keywords are " + keyWords);
 	}
 
+	/**
+	 * @param folder 	where you want to search
+	 * @return 		 	All files inside the folder
+	 */
 	public ArrayList<ArrayList<String>> listFilesForFolder(final File folder) {
 		ArrayList<ArrayList<String>> documents = new ArrayList<ArrayList<String>>();
 		for (final File fileEntry : folder.listFiles()) {
@@ -99,7 +166,6 @@ public class ChatbotApplication implements CommandLineRunner{
 			} else {
 			    //read each file read into document structure
 				ArrayList<String> document = new ArrayList<String>();
-
 				try {
 					BufferedReader br = new BufferedReader(new FileReader(fileEntry));
 
