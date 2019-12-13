@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+	<head>
+		<meta charset="utf-8" />
+		<script src="jquery.min.js"></script>
+		<title>ChatBot</title>
+		<script>
+		
+		//Call this function when you have incoming messeages. For example after your call to the handler and to display the response, as in the example given below.
+		//You can call this if you have a streaming interface as well
+		function sessionCallback(str) {
+			$("#mainSession").append("<div style='width: 100%; color: #0000FF; border: 1px; border-style: solid;'><span style='font-weight: bold'>Chatbot replied @ " + new Date().toLocaleString() + ":</span><br />" + str + "</div>");
+		}
+		</script>
+	</head>
+	<body>
+		<h1>ChatBot</h1>
+		<div id="mainSession" style="width: 100%; height: 500px; border: 2px; border-style: solid;"></div>
+		<input type="text" style="width: 100%;" id="mainInput" />
+	</body>
+	<script>
+	$("#mainInput").keypress(function(e) {
+		if (e.keyCode == "13") {
+			$("#mainSession").append("<div style='width: 100%; color: #FF0000; border: 1px; border-style: solid;'><span style='font-weight: bold'>I said @ " + new Date().toLocaleString() + ":</span><br />" + $("#mainInput").val() + "</div>");
+			// Call your AJAX request to the corresponding interface here, make sure the message is delievered to your actual handler
+			/* Example below:
+			$.post("msgHandler", {'msg': $("#mainInput").val()}, function(data) {
+				sessionCallback(data);
+			});
+			*/
+			//A static local hanlder is given to complete the functionality.
+			var handler = {
+				"hi":"Hello",
+				"hello": "Hi there!",
+				"how old are you": "I am 1 year old!",
+				"who is your mom": "My mom is Echo!",
+				"how are you": "I am fine, thanks!",
+				"Could you find past paper for me": "sure, wait a sec please",
+			}
+			//Process the string to lower case and remove symbols. This is to make the input more fault-tolerant.
+			userMsg = $("#mainInput").val().toLowerCase().replace(/[\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g, "");
+			if(handler[userMsg]) {
+				sessionCallback(handler[userMsg]);
+			} else {
+				sessionCallback("Sorry I could not understand what you said!");
+			}
+			$("#mainInput").val("");
+		}
+	});
+	</script>
+</html>
