@@ -12,6 +12,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -28,6 +29,7 @@ public class ChatbotApplication implements CommandLineRunner{
 
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
+		globals.threadList = new ArrayList<>();
 
 		//repository.deleteAll();
 
@@ -84,16 +86,21 @@ public class ChatbotApplication implements CommandLineRunner{
 				monDoc.body = body;
 				JSONObject obj = new JSONObject(theObj.get("_id").toString());
 				String threadid = obj.get("thread_id").toString();
-				String subthreadid = obj.get("subthread_id").toString();
+				String subid = obj.get("sub_id").toString();
+				String subthreadid = (String)theObj.get("subthread");
+				String qa = (String)theObj.get("qa");
 
 				monDoc.threadid = threadid;
+				globals.threadList.add(threadid);
+				monDoc.subid = subid;
+				monDoc.qa = qa;
 				monDoc.subthreadid = subthreadid;
 				monDoc.keyWords = new ArrayList<>();
-				monDoc.date = (String) theObj.get("Date");
+				monDoc.date = (String) theObj.get("date");
 				mongoDocuments.add(monDoc);
 			}
-			globals.mongoDocuments = mongoDocuments;
 		}
+		globals.mongoDocuments = mongoDocuments;
 
 		ArrayList<ArrayList<String>> keyList = new ArrayList<ArrayList<String>>();
 		TFIDFCalc keywordCalc = new TFIDFCalc();
@@ -126,10 +133,11 @@ public class ChatbotApplication implements CommandLineRunner{
 					}
 				}
 			}
-			DBObject query = new BasicDBObject("_id", new BasicDBObject("thread_id", mongoDocuments.get(ind).threadid)
-														.append("subthread_id", mongoDocuments.get(ind).subthreadid));
+			DBObject query = new BasicDBObject("_id", new BasicDBObject("thread_id", globals.threadList.get(ind))
+														.append("sub_id", mongoDocuments.get(ind).subid));
 			DBObject update = new BasicDBObject("keywords", tempKeyWords);
 			collection.update(query, update);
+			globals.mongoDocuments.get(testIndex).keyWords = tempKeyWords;
 			globals.keyList.add(tempKeyWords);
 		}
 
@@ -215,58 +223,43 @@ public class ChatbotApplication implements CommandLineRunner{
 	public void adminIO(DBCollection collection, ArrayList<ArrayList<String>> documents) {
 		//handle admin
 		boolean quit = false;
-		System.out.println("Welcome admin user! What do you want to do?");
+		System.out.println("BOT> Welcome admin user! What do you want to do?");
 		while (!quit) {
 			Scanner in = new Scanner(System.in);
 			String s = in.nextLine();
 			if (s.equalsIgnoreCase("add")) {
 				Boolean valid = false;
-				Boolean preexisting = false;
 				String threadid = "";
 				String subthreadId = "";
-				while (!preexisting) {
-					while (!valid) {
-						System.out.println("Specify thread id");
-						threadid = in.nextLine();
-						if (threadid == null) {
-							System.out.println("Sorry, invalid thread id, please try again");
-						} else {
-							valid = true;
-						}
-					}
-					valid = false;
-
-					while (!valid) {
-						System.out.println("Specify subthread id");
-						subthreadId = in.nextLine();
-						//TODO check if thread/subthread combo already exists and if they are numbers
-						if (subthreadId == null) {
-							System.out.println("Sorry, invalid subthread id, please try again");
-						} else {
-							valid = true;
-						}
-					}
-					DBObject query = new BasicDBObject("_id", new BasicDBObject("thread_id", threadid)
-							.append("subthread_id", subthreadId));
-					DBCursor cursor = collection.find(query);
-
-					DBObject test = cursor.one();
-					if (!(test == null)) {
-						System.out.println("There is already an entry for this thread and subthread id combo");
-						valid=false;
+				while (!valid) {
+					System.out.println("BOT> Specify thread id");
+					threadid = in.nextLine();
+					if (threadid == null) {
+						System.out.println("BOT> Sorry, invalid thread id, please try again");
 					} else {
-						preexisting = true;
+						valid = true;
 					}
 				}
-
 				valid = false;
+
+				while (!valid) {
+					System.out.println("BOT> Specify subthread id");
+					subthreadId = in.nextLine();
+					if (subthreadId == null) {
+						System.out.println("BOT> Sorry, invalid subthread id, please try again");
+					} else {
+						valid = true;
+					}
+				}
+				valid = false;
+
 				String date = "";
 				while (!valid) {
-					System.out.println("Enter date submitted (dd-MM-yyyy)");
+					System.out.println("BOT> Enter date submitted (dd-MM-yyyy)");
 					date = in.nextLine();
 					//TODO check if input is actually a date
 					if(!isValidDate(date)) {
-						System.out.println("Sorry, invalid date, try entering again");
+						System.out.println("BOT> Sorry, invalid date, try entering again");
 					} else {
 						valid = true;
 					}
@@ -275,12 +268,24 @@ public class ChatbotApplication implements CommandLineRunner{
 				String body = "";
 				valid = false;
 				while (!valid) {
-					System.out.println("Enter the body of the thread");
+					System.out.println("BOT> Enter the body of the thread");
 					body = in.nextLine();
 					if (body.equals("")) {
-						System.out.println("The body cannot be empty");
+						System.out.println("BOT> The body cannot be empty");
 					} else {
 						valid = true;
+					}
+				}
+
+				String qa = "";
+				valid = false;
+				while(!valid) {
+					System.out.println("BOT> Is this a question (q) or an answer (a)?");
+					qa = in.nextLine().toLowerCase();
+					if (qa.equals("q") || qa.equals("a")) {
+						valid = true;
+					} else {
+						System.out.println("BOT> Please enter either 'q' or 'a'");
 					}
 				}
 
@@ -290,18 +295,26 @@ public class ChatbotApplication implements CommandLineRunner{
 				}
 
 				ArrayList<String> keyWords = getKeyWords(documents,convBody, globals.averageTF);
+				int subid = getThreadSize(collection, threadid);
 
 				//TODO process body into keywords
 				DBObject newEntry = new BasicDBObject("_id", new BasicDBObject("thread_id", threadid)
-						.append("subthread_id", subthreadId))
+                        									.append("sub_id",subid))
+						.append("subthread", subthreadId)
 						.append("date", date)
 						.append("body", body)
+						.append("qa", qa)
 						.append("keywords", keyWords);
 				collection.insert(newEntry);
-				System.out.println("Inserted new value! Do you want to do anything else?");
+				globals.keyList.add(keyWords);
+				globals.threadList.add(threadid);
+				System.out.println("BOT> Inserted new value! Do you want to do anything else?");
 			} else if (s.equals("quit")) {
-				System.out.println("Ok, bye.");
+				System.out.println("BOT> Ok, bye. [RETURNING TO MAIN USER]");
+				quit = true;
 				normalIO(documents, collection);
+			} else if (s.equals("help")) {
+				System.out.println("BOT> Type 'add' to add a new record, or quit to return to the main user");
 			}
 		}
 	}
@@ -309,8 +322,16 @@ public class ChatbotApplication implements CommandLineRunner{
 	public void normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection) {
 		boolean quit = false;
 		boolean admin = false;
+
+		DBCursor cursor = collection.find(new BasicDBObject());
+		if (cursor.size() == 0) {
+			System.out.println("BOT> Database is empty, enabling admin mode");
+			quit = true;
+			admin = true;
+		} else {
+			System.out.println("BOT> Hi, how can I help?");
+		}
 		TFIDFCalc keyWordCalc = new TFIDFCalc();
-		System.out.println("Hi, how can I help?");
 		while (!quit) {
 			Scanner in = new Scanner(System.in);
 			String s = in.nextLine();
@@ -320,6 +341,8 @@ public class ChatbotApplication implements CommandLineRunner{
 			} else if (s.equals("admin")) {
 				quit = true;
 				admin = true;
+			} else if (s.toLowerCase().equals("help") || s.toLowerCase().equals("?")) {
+				System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
 			} else {
 			    ArrayList<String> newDocument = new ArrayList<>();
 				for (String word : sList) {
@@ -332,8 +355,8 @@ public class ChatbotApplication implements CommandLineRunner{
 				int index;
 				index = 0;
 				int threshold = (int) (newDocument.size()*0.05);
+				ArrayList<String> foundThreads = new ArrayList<>();
 				ArrayList<Integer> indices = new ArrayList<>();
-				System.out.println(keyWords);
 				for (ArrayList<String> keyWordsi : globals.keyList) {
 					int matching = 0;
 					for (String w : keyWords) {
@@ -341,19 +364,66 @@ public class ChatbotApplication implements CommandLineRunner{
 							matching++;
 						}
 					}
-					if (matching > threshold) {
+					if (matching > threshold && !foundThreads.contains(globals.mongoDocuments.get(index).threadid)) {
 						indices.add(index);
+						foundThreads.add(globals.mongoDocuments.get(index).threadid);
 					}
 					index++;
 				}
 				if (indices.size() > 0) {
-					System.out.println("I found some information in these threads! (thread - subthread)");
-					for (int i : indices) {
-						System.out.println(globals.mongoDocuments.get(i).threadid + " - " + globals.mongoDocuments.get(i).subthreadid);
+				    ArrayList<String> answers = new ArrayList<>();
+				    String threadid = "";
+				    String subthread = "";
+				    if (indices.size() == 1) {
+				        //Bot only found 1 match
+						//TODO PRINT OUT ANSWER
+                        threadid = globals.mongoDocuments.get(indices.get(0)).threadid;
+                        subthread = globals.mongoDocuments.get(indices.get(0)).subthreadid;
+						answers = getAnswers(collection, threadid);
+					} else {
+				    	//Bot finds 2 matches
+						System.out.println("BOT> I found some information in these threads!");
+						int ind = 0;
+						for (int i : indices) {
+							System.out.println(ind + ") " + globals.mongoDocuments.get(i).threadid);
+							ind++;
+						}
+						System.out.println("BOT> " + ind++ + ") None of the above");
+						boolean valid = false;
+						while (!valid) {
+							System.out.println("BOT> Select an option.");
+							String ansLine = in.nextLine();
+							Integer selectAns = toInt(ansLine);
+							if (selectAns > ind && selectAns >= 0) {
+								System.out.println("BOT> Choose one of the options provided");
+							} else {
+								//TODO show answer from selected text
+								valid = true;
+								if (selectAns == ind) {
+									System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
+									System.out.println("BOT> Can I help with anything else?");
+								} else {
+									Integer docIndex = indices.get(selectAns);
+									threadid = globals.mongoDocuments.get(docIndex).threadid;
+									answers = getAnswers(collection,threadid);
+								}
+							}
+						}
 					}
-					System.out.println("Do you need help with anything else?");
+					if (answers.size() > 0) {
+						int ansIndex = 1;
+						System.out.println("BOT> I found these answers:");
+						for (String a : answers) {
+							System.out.println("BOT> Answer " + ansIndex + " -- " + a);
+							ansIndex++;
+						}
+						System.out.println("BOT> For more information, check the '" + threadid + "' thread");
+					} else {
+						System.out.println("BOT> I can't find an answer for this question because it hasn't been answered yet.");
+					}
+					System.out.println("BOT> Can I help with anything else?");
 				} else {
-					System.out.println("Sorry, I don't have any information on that. Do you want to try again?");
+					System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
 				}
 			}
 		}
@@ -365,4 +435,41 @@ public class ChatbotApplication implements CommandLineRunner{
 		}
 	}
 
+	public Integer getThreadSize(DBCollection collection, String threadid) {
+		DBCursor cursor = collection.find(new BasicDBObject("_id.thread_id",threadid));
+		return cursor.size();
+	}
+
+	public ArrayList<String> getAnswers(DBCollection collection, String threadid) {
+		ArrayList<String> answers = new ArrayList<>();
+		DBCursor cursor = collection.find(new BasicDBObject("_id.thread_id",threadid));
+		for (int i = 0; i < cursor.size(); i++) {
+		    DBObject theObj = cursor.next();
+		    if (theObj.get("qa").equals("a")) {
+		    	answers.add((String)theObj.get("body"));
+			}
+		}
+
+		return answers;
+	}
+
+	public Integer toInt(String string) {
+		Integer output = 0;
+		ArrayList<Character> ints = new ArrayList<Character>(Arrays.asList('0','1','2','3','4','5','6','7','8','9'));
+		int i = 1;
+		boolean error = false;
+		for (char c : string.toCharArray()) {
+			if (ints.contains(c)) {
+				output += i * ints.indexOf(c);
+			} else {
+				error = true;
+			}
+			i *= 10;
+		}
+		if (!error) {
+			return output;
+		} else {
+			return -1;
+		}
+	}
 }
