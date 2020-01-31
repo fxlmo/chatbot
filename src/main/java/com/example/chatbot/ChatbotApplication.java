@@ -2,11 +2,19 @@ package com.example.chatbot;
 
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.MongoDbFactory;
 
 import java.io.*;
 import java.text.ParseException;
@@ -21,58 +29,39 @@ import java.util.Scanner;
 
 @SpringBootApplication
 @ComponentScan(basePackageClasses = ChatbotController.class)
-public class ChatbotApplication implements CommandLineRunner{
+public class ChatbotApplication implements CommandLineRunner {
+	private final MongoDbFactory mongo;
+	private final MongoDatabase databaseAmazon;
+	private final MongoCollection<Document> collectionAmazon;
+
+	@Autowired
+	public ChatbotApplication(MongoDbFactory mongo) {
+		this.mongo = mongo;
+		this.databaseAmazon = mongo.getDb("chatbot");
+		this.collectionAmazon = databaseAmazon.getCollection("threads");
+	}
 	globals globals = new globals();
 	public static void main(String[] args) {
 		SpringApplication.run(ChatbotApplication.class, args);
 	}
 
+	@Override
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
 		globals.threadList = new ArrayList<>();
 
-		//repository.deleteAll();
-
-		// save a couple of customers
-		//repository.save(new Customer("Alice", "Smith"));
-		//repository.save(new Customer("Bob", "Smith"));
-
-		// fetch all customers
-		//System.out.println("Customers found with findAll():");
-		//System.out.println("-------------------------------");
-		//for (Customer customer : repository.findAll()) {
-		//	System.out.println(customer);
-		//}
-		//System.out.println();
-
-		// fetch an individual customer
-		//System.out.println("Customer found with findByFirstName('Alice'):");
-		//System.out.println("--------------------------------");
-		//System.out.println(repository.findByFirstName("Alice"));
-
-		//System.out.println("Customers found with findByLastName('Smith'):");
-		//System.out.println("--------------------------------");
-		//for (Customer customer : repository.findByLastName("Smith")) {
-		//	System.out.println(customer);
-		//}
-
 		//Mongo stuff
 		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+		//This will flag as deprecated but it's fine I promise
 		DB database = mongoClient.getDB("chatbot");
+		//Specify the collection we're using (it's called threads in this)
 		DBCollection collection = database.getCollection("threads");
 
-
-
-		// Keyword stuff
-		//loop through each document and calculate td-idf of each keyword
-		// TODO: parse into thread id, date, etc. This part of the algorithm should only receive
-		// TODO: the body of each thread to get keywords out
 		ArrayList<ArrayList<String>> documents = new ArrayList<ArrayList<String>>();
 		ArrayList<mongoDocument> mongoDocuments = new ArrayList<>();
 
 		//GET ALL FILES FROM MONGO
 		DBCursor cursor = collection.find(new BasicDBObject());
-
 		for (int i = 0; i < cursor.size(); i++) {
 			DBObject theObj = cursor.next();
 			String body = (String)theObj.get("body");
@@ -100,9 +89,10 @@ public class ChatbotApplication implements CommandLineRunner{
 				mongoDocuments.add(monDoc);
 			}
 		}
+		//Set up globals
 		globals.mongoDocuments = mongoDocuments;
 
-		ArrayList<ArrayList<String>> keyList = new ArrayList<ArrayList<String>>();
+		//Calculate all keywords for the mongo entries
 		TFIDFCalc keywordCalc = new TFIDFCalc();
 		int ind = 0;
 		for (int testIndex = 0; testIndex < documents.size(); testIndex++) {
@@ -120,6 +110,7 @@ public class ChatbotApplication implements CommandLineRunner{
 				}
 			}
 			avg = avg/i;
+			//This flag is the global average for all of the keywords. I use this as a threshold.
 			globals.averageTF = avg;
 
 			ArrayList<String> tempKeyWords = new ArrayList<>();
@@ -141,6 +132,7 @@ public class ChatbotApplication implements CommandLineRunner{
 			globals.keyList.add(tempKeyWords);
 		}
 
+		//Begin interaction with user
 		normalIO(documents, collection);
 	}
 
@@ -220,7 +212,7 @@ public class ChatbotApplication implements CommandLineRunner{
 		return true;
 	}
 
-	public void adminIO(DBCollection collection, ArrayList<ArrayList<String>> documents) {
+	public void adminIO(DBCollection collection, ArrayList<ArrayList<String>> documents) throws JSONException {
 		//handle admin
 		boolean quit = false;
 		System.out.println("BOT> Welcome admin user! What do you want to do?");
@@ -315,11 +307,13 @@ public class ChatbotApplication implements CommandLineRunner{
 				normalIO(documents, collection);
 			} else if (s.equals("help")) {
 				System.out.println("BOT> Type 'add' to add a new record, or quit to return to the main user");
+			} else {
+				System.out.println("BOT> Did not recognise this command. Try again.");
 			}
 		}
 	}
 
-	public void normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection) {
+	public void normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection) throws JSONException {
 		boolean quit = false;
 		boolean admin = false;
 
@@ -329,6 +323,7 @@ public class ChatbotApplication implements CommandLineRunner{
 			quit = true;
 			admin = true;
 		} else {
+			getMongoDocuments();
 			System.out.println("BOT> Hi, how can I help?");
 		}
 		TFIDFCalc keyWordCalc = new TFIDFCalc();
@@ -397,7 +392,6 @@ public class ChatbotApplication implements CommandLineRunner{
 							if (selectAns > ind && selectAns >= 0) {
 								System.out.println("BOT> Choose one of the options provided");
 							} else {
-								//TODO show answer from selected text
 								valid = true;
 								if (selectAns == ind) {
 									System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
@@ -471,5 +465,29 @@ public class ChatbotApplication implements CommandLineRunner{
 		} else {
 			return -1;
 		}
+	}
+
+	public void getMongoDocuments() throws JSONException {
+		FindIterable iterable = collectionAmazon.find();
+		MongoCursor cursor = iterable.cursor();
+		while(cursor.hasNext()) {
+			Document theObj = (Document) cursor.next();
+			System.out.println(theObj);
+			JSONObject jsonObject = new JSONObject(theObj);
+			System.out.println(jsonObject.get("_id"));
+			try {
+				JSONObject id = new JSONObject(jsonObject.getString("_id"));
+				System.out.println(id.get("thread_id"));
+			} catch (Exception ex) {
+
+			}
+
+			//String threadid = id.getString("thread_id");
+			//if (threadid != null) {
+			//	System.out.println(id.get("thread_id"));
+			//}
+
+		}
+
 	}
 }
