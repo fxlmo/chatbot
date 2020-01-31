@@ -37,7 +37,7 @@ public class ChatbotApplication implements CommandLineRunner {
 	@Autowired
 	public ChatbotApplication(MongoDbFactory mongo) {
 		this.mongo = mongo;
-		this.databaseAmazon = mongo.getDb("chatbot");
+		this.databaseAmazon = mongo.getDb("test");
 		this.collectionAmazon = databaseAmazon.getCollection("threads");
 	}
 	globals globals = new globals();
@@ -51,7 +51,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		globals.threadList = new ArrayList<>();
 
 		//Mongo stuff
-		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://admin:chatbot123@ec2-54-198-1-3.compute-1.amazonaws.com:27017/?authSource=admin&authMechanism=SCRAM-SHA-1"));
 		//This will flag as deprecated but it's fine I promise
 		DB database = mongoClient.getDB("chatbot");
 		//Specify the collection we're using (it's called threads in this)
@@ -300,9 +300,12 @@ public class ChatbotApplication implements CommandLineRunner {
 				collection.insert(newEntry);
 				globals.keyList.add(keyWords);
 				globals.threadList.add(threadid);
+				// Recalculate keywords
+				updateKeywords(collection);
 				System.out.println("BOT> Inserted new value! Do you want to do anything else?");
 			} else if (s.equals("quit")) {
 				System.out.println("BOT> Ok, bye. [RETURNING TO MAIN USER]");
+				//TODO update locally held records??
 				quit = true;
 				normalIO(documents, collection);
 			} else if (s.equals("help")) {
@@ -445,6 +448,39 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 
 		return answers;
+	}
+
+	//TODO optimise??
+	public void updateKeywords(DBCollection collection) {
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<ArrayList<String>> documents = new ArrayList<>();
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject theObj = cursorGather.next();
+			String word = (String) theObj.get("body");
+			ArrayList<String> convBody = new ArrayList<String>();
+			for (String w : word.split(" ")) {
+				convBody.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
+			}
+			documents.add(convBody);
+		}
+		DBCursor cursor = collection.find(new BasicDBObject());
+		for (int i = 0; i < cursor.size(); i++) {
+			DBObject theObj = cursor.next();
+
+			String[] document = ((String) theObj.get("body")).split(" ");
+			//TODO change threshold
+
+			ArrayList<String> keywords = getKeyWords(documents, new ArrayList<String>(Arrays.asList(document)),1.5);
+			theObj.put("keywords", keywords);
+			DBObject newEntry = new BasicDBObject("_id", theObj.get("_id"))
+					.append("subthread", theObj.get("subthreadId"))
+					.append("date", theObj.get("date"))
+					.append("body", theObj.get("body"))
+					.append("qa", theObj.get("qa"))
+					.append("keywords", keywords);
+			collection.remove(new BasicDBObject(new BasicDBObject("_id",theObj.get("_id"))));
+			collection.insert(newEntry);
+		}
 	}
 
 	public Integer toInt(String string) {
