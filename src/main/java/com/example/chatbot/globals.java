@@ -6,5 +6,6 @@ public class globals {
     public double averageTF;
     public ArrayList<ArrayList<String>> keyList;
     public ArrayList<String> threadList;
-    public ArrayList<mongoDocument> mongoDocuments;
+    public ArrayList<entry> entries;
+    public String context;
 }

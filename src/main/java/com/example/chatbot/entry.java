@@ -2,15 +2,16 @@ package com.example.chatbot;
 
 import java.util.ArrayList;
 
-public class mongoDocument {
+public class entry {
     public String threadid;
-    public String subid;
+    public int subid;
     public String subthreadid;
-    public String body;
     public String date;
+    public String body;
+    public ArrayList<String> keywords;
     public String qa;
-    public ArrayList<String> keyWords;
 
+    @Override
     public String toString() {
         String output = "";
         output = "Thread id - " + this.threadid + '\n' +
@@ -19,7 +20,7 @@ public class mongoDocument {
                 "body - " + this.body + "\n" +
                 "date - " + this.date + "\n" +
                 "qa - " + this.qa + "\n" +
-                "Keywords - " + this.keyWords;
+                "Keywords - " + this.keywords;
         return output;
     }
 }
