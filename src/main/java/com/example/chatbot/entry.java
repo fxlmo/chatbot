@@ -23,4 +23,16 @@ public class entry {
                 "Keywords - " + this.keywords;
         return output;
     }
+
+    public entry add(String threadid, String subthreadid, int subid, String date, String qa, ArrayList<String> keywords, String body) {
+        entry ent = new entry();
+        ent.body = body;
+        ent.threadid = threadid;
+        ent.subid = subid;
+        ent.date = date;
+        ent.subthreadid = subthreadid;
+        ent.qa = qa;
+        ent.keywords = keywords;
+        return ent;
+    }
 }

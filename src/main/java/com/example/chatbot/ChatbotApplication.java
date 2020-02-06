@@ -2,9 +2,7 @@ package com.example.chatbot;
 
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.json.JSONException;
@@ -16,14 +14,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.MongoDbFactory;
 
-import javax.swing.plaf.IconUIResource;
-import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import static com.example.chatbot.context.admin_else;
+import static com.example.chatbot.context.none;
+import static com.example.chatbot.context.list;
+import static com.example.chatbot.context.user_else;
+
 
 //amazon mongo stuff
 //local mongo stuff
@@ -50,7 +52,7 @@ public class ChatbotApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
 		globals.threadList = new ArrayList<>();
-		globals.context = "none";
+		globals.context = none;
 
 		//Mongo stuff
 		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://admin:chatbot123@ec2-54-198-1-3.compute-1.amazonaws.com:27017/?authSource=admin&authMechanism=SCRAM-SHA-1"));
@@ -87,7 +89,6 @@ public class ChatbotApplication implements CommandLineRunner {
 
 		//Calculate all keywords for the mongo entries
 		TFIDFCalc keywordCalc = new TFIDFCalc();
-		int ind = 0;
 		for (int testIndex = 0; testIndex < documents.size(); testIndex++) {
 			HashMap<String, Double> keyWords = new HashMap<>();
 			double avg = 0;
@@ -156,11 +157,11 @@ public class ChatbotApplication implements CommandLineRunner {
 	public void adminIO(DBCollection collection, ArrayList<ArrayList<String>> documents) throws JSONException {
 		boolean quit = false;
 		System.out.println("BOT> Welcome admin user! What do you want to do?");
-		globals.context = "none";
+		globals.context = none;
 		while (!quit) {
 			Scanner in = new Scanner(System.in);
 			String s = in.nextLine();
-			if (globals.context.equals("list")) {
+			if (globals.context.equals(list)) {
 				if (s.equalsIgnoreCase("")) {
 					for (entry ent : globals.entries) {
 						System.out.println("===================");
@@ -168,16 +169,16 @@ public class ChatbotApplication implements CommandLineRunner {
 					}
 					System.out.println("===================");
 					System.out.println("BOT> Can I help with anything else?");
-					globals.context = "admin-else";
+					globals.context = admin_else;
 				} else if (s.equalsIgnoreCase("quit") || s.equalsIgnoreCase("q") || s.equalsIgnoreCase("exit")) {
 					System.out.println("BOT> Ok, can I help with anything else?");
-					globals.context = "admin-else";
+					globals.context = admin_else;
 				} else {
 					System.out.println("BOT> Couldn't find this thread id. Try again, or type quit to cancel");
 				}
 			} else {
 				if (s.equalsIgnoreCase("add")) {
-					globals.context = "none";
+					globals.context = none;
 					Boolean valid = false;
 					String threadid = "";
 					String subthreadId = "";
@@ -260,40 +261,36 @@ public class ChatbotApplication implements CommandLineRunner {
 					globals.keyList.add(keyWords);
 					globals.threadList.add(threadid);
 					entry ent = new entry();
-					ent.threadid = threadid;
-					ent.keywords = keyWords;
-					ent.subid = subid;
-					ent.subthreadid = subthreadId;
-					ent.body = body;
-					ent.date = date;
-					ent.qa = qa;
-					globals.entries.add(ent);
+					globals.entries.add(ent.add(threadid,subthreadId,subid,date,qa,keyWords,body));
 					// Recalculate keywords
 					updateKeywords(collection);
 					System.out.println("BOT> Inserted new value! Do you want to do anything else?");
-					globals.context = "admin-else";
-				} else if (s.equalsIgnoreCase("quit") || globals.context.equals("admin-else") && s.equalsIgnoreCase("no")) {
+					globals.context = admin_else;
+				} else if (s.equalsIgnoreCase("quit") || globals.context.equals(admin_else) && s.equalsIgnoreCase("no")) {
 					System.out.println("BOT> Ok, bye. [RETURNING TO MAIN USER]");
 					//TODO update locally held records??
 					quit = true;
 					normalIO(documents, collection);
 				} else if (s.equalsIgnoreCase("help") || s.equals("?")) {
 					System.out.println("BOT> Type 'add' to add a new record, or quit to return to the main user");
-					globals.context = "none";
+					globals.context = none;
 				} else if (s.equalsIgnoreCase("list")) {
 					System.out.println("BOT> Type a threadid to list all entries from that thread, or leave blank to show all");
-					globals.context = "list";
+					globals.context = list;
 				} else if (s.equalsIgnoreCase("recalc") || s.equalsIgnoreCase("recalculate")) {
 					updateKeywords(collection);
 				} else if (s.equalsIgnoreCase("remove all")) {
+					//add confirmation
 					DBCursor cursor = collection.find(new BasicDBObject());
 					for (int i = 0; i < cursor.size(); i++) {
 						collection.remove(cursor.next());
 					}
-					//TODO add delete, list, and edit functionality
+					System.out.println("BOT> Removed all entries. Can I help with anything else?");
+					globals.context = admin_else;
+				//TODO add delete, list, and edit functionality
 				} else {
 					System.out.println("BOT> Did not recognise this command. Try again.");
-					globals.context = "none";
+					globals.context = none;
 				}
 			}
 		}
@@ -310,18 +307,16 @@ public class ChatbotApplication implements CommandLineRunner {
 		boolean admin = false;
 
 		DBCursor cursor = collection.find(new BasicDBObject());
-		System.out.println("cur size = " + cursor.size());
-		System.out.println(cursor);
 		if (cursor.size() == 0) {
-			//if the database is empty on start, enable admin mode to add some records (this should never really run)
+			//if the database is empty on start, enable admin mode to add some records (this should never really run in theory)
 			System.out.println("BOT> Database is empty, enabling admin mode");
 			quit = true;
 			admin = true;
 		} else {
-			System.out.println("got here1");
 			getEntries(collection);
 			System.out.println("BOT> Hi, how can I help?");
 		}
+		//check input and match to given string
 		while (!quit) {
 			Scanner in = new Scanner(System.in);
 			String s = in.nextLine();
@@ -388,7 +383,7 @@ public class ChatbotApplication implements CommandLineRunner {
 								if (selectAns == ind) {
 									System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
 									System.out.println("BOT> Can I help with anything else?");
-									globals.context = "user-else";
+									globals.context = user_else;
 								} else {
 									Integer docIndex = indices.get(selectAns);
 									threadid = globals.entries.get(docIndex).threadid;
@@ -409,21 +404,21 @@ public class ChatbotApplication implements CommandLineRunner {
 						System.out.println("BOT> I can't find an answer for this question because it hasn't been answered yet.");
 					}
 					System.out.println("BOT> Can I help with anything else?");
-					globals.context = "user-else";
+					globals.context = user_else;
 				} else {
 					System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
 				}
 			}
 		}
 
-		//handle admin
+		//goto admin interaction (check password goes here)
 		if (admin) {
 			adminIO(collection,documents);
 		}
 	}
 
 	/**
-	 * Get size of thread (number of entries)
+	 * Get size of thread (number of entries) for a given thread id
 	 * @param collection	The collection of mongodocs
 	 * @param threadid		Thread id to check size of
 	 * @return				size of thread
@@ -434,7 +429,7 @@ public class ChatbotApplication implements CommandLineRunner {
 	}
 
 	/**
-	 * Returns all entries that have the 'answer flag'
+	 * Returns all entries that have the 'answer' flag
 	 * @param collection	The collection of mongodocs
 	 * @param threadid		Thread id to check
 	 * @return				Array of answers
@@ -462,12 +457,9 @@ public class ChatbotApplication implements CommandLineRunner {
 			String word = (String) theObj.get("body");
 			//System.out.println(theObj.get("_id"));
 			ArrayList<String> convBody = new ArrayList<String>();
-			try {
-			    String[] wList = word.trim().split(" ");
-				for (String w: wList) {
-					convBody.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
-				}
-			} catch(Exception ex) {
+			String[] wList = word.trim().split(" ");
+			for (String w: wList) {
+				convBody.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
 			}
 			documents.add(convBody);
 		}
@@ -493,6 +485,11 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 	}
 
+	/**
+	 * Convert string to (positive) integer
+	 * @param string	String to convert
+	 * @return			Returns an integer or -1 if string contains non-numeric characters
+	 */
 	public Integer toInt(String string) {
 		Integer output = 0;
 		ArrayList<Character> ints = new ArrayList<Character>(Arrays.asList('0','1','2','3','4','5','6','7','8','9'));
@@ -514,19 +511,18 @@ public class ChatbotApplication implements CommandLineRunner {
 	}
 
 	public void getEntries(DBCollection collection) throws JSONException {
-		if (!globals.entries.equals(null)) {
-			globals.entries = new ArrayList<>();
-		} else {
-			globals.entries.clear();
-		}
+	    //clear entries to readd from mongo
+		globals.entries.clear();
 		DBCursor cursor = collection.find(new BasicDBObject());
 		for (int i = 0; i < cursor.size(); i++) {
 			DBObject currentDoc = cursor.next();
 			String body = (String)currentDoc.get("body");
-			System.out.println(currentDoc);
-			entry ent = new entry();
+			//System.out.println(currentDoc);
 			//id is a composite string, so set up JSON reader to split into the two parts
 			JSONObject obj = new JSONObject(currentDoc.get("_id").toString());
+
+			//create new entry and add to global list of entries
+			entry ent = new entry();
 			ent.threadid = obj.get("thread_id").toString();
 			ent.subid = (int) obj.get("sub_id");
 			ent.body = body;

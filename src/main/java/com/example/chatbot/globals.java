@@ -7,5 +7,5 @@ public class globals {
     public ArrayList<ArrayList<String>> keyList;
     public ArrayList<String> threadList;
     public ArrayList<entry> entries;
-    public String context;
+    public context context;
 }
