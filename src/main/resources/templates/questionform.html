@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+    <head>
+        <title>QuestionBot</title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">
+                <h1 style="color: black; border: 5px solid black; letter-spacing: 5px; padding: 10px;">
+                Question Bot
+                </h1>
+
+                <img style="position: absolute; top: 13px; left: 250px;" src="botpic.gif" width="100px" height="100px" />
+                <img style="position: absolute; top: 2px; left: 55px;"src="university-of-bristol-1.svg" width="160px" height="140px"/>
+            </div>
+            <div id="admin">
+                <button class="button" type="admin">Admin</button>
+            </div>
+            <div id="content">
+                <p>The 'bot' will check previously answered blackboard forum questions and return any matches, if you're question is still not answered then create a new thread.<br></br><br></br>Ask a question!</p>
+
+                <form  method="post">
+                    <input class="input" type="text" name="question" placeholder="Type here">
+                    <button class="button" type="ask">Ask bot</button>
+                </form>
+            </div>
+            <div id="footer">
+                Copyright &copy; 2020 UoB chatbot team
+            </div>
+        </div>
+
+    </body>
+</html>
