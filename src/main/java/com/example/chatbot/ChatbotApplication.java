@@ -57,13 +57,12 @@ public class ChatbotApplication implements CommandLineRunner {
 		//This will flag as deprecated but it's fine I promise
 		DB database = mongoClient.getDB("chatbot");
 		//Specify the collection we're using (it's called threads in this)
-		DBCollection collection = database.getCollection("threads");
+		globals.collection = database.getCollection("threads");
 
 		//Set up containers
-		ArrayList<ArrayList<String>> documents = new ArrayList<ArrayList<String>>();
 
 		//GET ALL FILES FROM MONGO
-		DBCursor cursor = collection.find(new BasicDBObject());
+		DBCursor cursor = globals.collection.find(new BasicDBObject());
 		//Iterate through documents
 		for (int i = 0; i < cursor.size(); i++) {
 			DBObject currentDoc = cursor.next();
@@ -73,7 +72,7 @@ public class ChatbotApplication implements CommandLineRunner {
 				for (String word : body.split(" ")) {
 					newDoc.add(word);
 				}
-				documents.add(newDoc);
+				globals.documents.add(newDoc);
 				//id is a composite string, so set up JSON reader to split into the two parts
 				JSONObject obj = new JSONObject(currentDoc.get("_id").toString());
 				String threadid = obj.get("thread_id").toString();
@@ -82,16 +81,16 @@ public class ChatbotApplication implements CommandLineRunner {
 			}
 		}
 		globals.entries = new ArrayList<>();
-		getEntries(collection);
+		getEntries(globals.collection);
 
 		//Calculate all keywords for the mongo entries
 		TFIDFCalc keywordCalc = new TFIDFCalc();
-		for (int testIndex = 0; testIndex < documents.size(); testIndex++) {
+		for (int testIndex = 0; testIndex < globals.documents.size(); testIndex++) {
 			HashMap<String, Double> keyWords = new HashMap<>();
 			double avg = 0;
 			int i = 0;
-			for (String word : documents.get(testIndex)) {
-				double freq = keywordCalc.tfidf(documents, documents.get(testIndex), word);
+			for (String word : globals.documents.get(testIndex)) {
+				double freq = keywordCalc.tfidf(globals.documents, globals.documents.get(testIndex), word);
 				i++;
 				avg += freq;
 				if (!keyWords.containsKey(word)) {
@@ -104,7 +103,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 
 		//Begin interaction with user
-		normalIO(documents, collection);
+		//normalIO(documents, globals.collection);
 	}
 
 	/**
@@ -411,7 +410,6 @@ public class ChatbotApplication implements CommandLineRunner {
 					if (answers.size() > 0) {
 						int ansIndex = 1;
 						System.out.println("BOT> I found these answers:");
-						JSONObject out = new JSONObject();
 						out.put("type","answer");
 						out.put("content",answers);
 						for (String a : answers) {
