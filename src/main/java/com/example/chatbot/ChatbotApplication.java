@@ -282,7 +282,7 @@ public class ChatbotApplication implements CommandLineRunner {
 					System.out.println("BOT> Ok, bye. [RETURNING TO MAIN USER]");
 					//TODO update locally held records??
 					quit = true;
-					normalIO(documents, collection);
+					//normalIO(documents, collection);
 				} else if (s.equalsIgnoreCase("help") || s.equals("?")) {
 					System.out.println("BOT> Type 'add' to add a new record, or quit to return to the main user");
 					globals.context = none;
@@ -316,31 +316,33 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @param collection
 	 * @throws JSONException
 	 */
-	public void normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection) throws JSONException {
+
+	public JSONObject normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection, String questionAsked) throws JSONException {
 		boolean quit = false;
 		boolean admin = false;
 
 		DBCursor cursor = collection.find(new BasicDBObject());
+		JSONObject out = new JSONObject();
 		if (cursor.size() == 0) {
 			//if the database is empty on start, enable admin mode to add some records (this should never really run in theory)
-			System.out.println("BOT> Database is empty, enabling admin mode");
-			quit = true;
-			admin = true;
+			//System.out.println("BOT> Database is empty, enabling admin mode");
+			out.put("type","error");
+			out.put("content","empty");
+			//quit = true;
+			//admin = true;
 		} else {
 			getEntries(collection);
-			System.out.println("BOT> Hi, how can I help?");
+			//System.out.println("BOT> Hi, how can I help?");
 		}
 		//check input and match to given string
-		while (!quit) {
-			Scanner in = new Scanner(System.in);
-			String s = in.nextLine();
-			String[] sList = s.split(" ");
-			if (s.equals("quit") || s.equals("exit") || s.equals("q")) {
+		//while (!quit) {
+			String[] sList = questionAsked.split(" ");
+			if (questionAsked.equals("quit") || questionAsked.equals("exit") || questionAsked.equals("q")) {
 				quit = true;
-			} else if (s.equals("admin")) {
+			} else if (questionAsked.equals("admin")) {
 				quit = true;
 				admin = true;
-			} else if (s.toLowerCase().equals("help") || s.toLowerCase().equals("?")) {
+			} else if (questionAsked.toLowerCase().equals("help") || questionAsked.toLowerCase().equals("?")) {
 				System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
 			} else {
 			    ArrayList<String> newDocument = new ArrayList<>();
@@ -386,29 +388,32 @@ public class ChatbotApplication implements CommandLineRunner {
 						}
 						System.out.println("BOT> " + ind++ + ") None of the above");
 						boolean valid = false;
-						while (!valid) {
-							System.out.println("BOT> Select an option.");
-							String ansLine = in.nextLine();
-							Integer selectAns = toInt(ansLine);
-							if (selectAns > ind && selectAns >= 0) {
-								System.out.println("BOT> Choose one of the options provided");
-							} else {
-								valid = true;
-								if (selectAns == ind) {
-									System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
-									System.out.println("BOT> Can I help with anything else?");
-									globals.context = user_else;
-								} else {
-									Integer docIndex = indices.get(selectAns);
-									threadid = globals.entries.get(docIndex).threadid;
-									answers = getAnswers(collection,threadid);
-								}
-							}
-						}
+						//while (!valid) {
+						//	System.out.println("BOT> Select an option.");
+							//String ansLine = in.nextLine();
+							//Integer selectAns = toInt(ansLine);
+							//if (selectAns > ind && selectAns >= 0) {
+							//	System.out.println("BOT> Choose one of the options provided");
+							//} else {
+							//	valid = true;
+							//	if (selectAns == ind) {
+							//		System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
+							//		System.out.println("BOT> Can I help with anything else?");
+							//		globals.context = user_else;
+							//	} else {
+							//		Integer docIndex = indices.get(selectAns);
+							//		threadid = globals.entries.get(docIndex).threadid;
+							//		answers = getAnswers(collection,threadid);
+							//	}
+						//	}
+						//}
 					}
 					if (answers.size() > 0) {
 						int ansIndex = 1;
 						System.out.println("BOT> I found these answers:");
+						JSONObject out = new JSONObject();
+						out.put("type","answer");
+						out.put("content",answers);
 						for (String a : answers) {
 							System.out.println("BOT> Answer " + ansIndex + " -- " + a);
 							ansIndex++;
@@ -420,15 +425,18 @@ public class ChatbotApplication implements CommandLineRunner {
 					System.out.println("BOT> Can I help with anything else?");
 					globals.context = user_else;
 				} else {
+					out.put("type","no-answer");
+					out.put("content","");
 					System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
 				}
 			}
-		}
+		//}
 
 		//goto admin interaction (check password goes here)
 		if (admin) {
 			adminIO(collection,documents);
 		}
+		return out;
 	}
 
 	/**
