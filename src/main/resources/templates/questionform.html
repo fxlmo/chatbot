@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org/">
     <head>
         <title>QuestionBot</title>
-        <link rel="stylesheet" type="text/css" href="style.css" />
+        <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}" />
     </head>
     <body>
         <div id="container">
@@ -10,9 +10,10 @@
                 <h1 style="color: black; border: 5px solid black; letter-spacing: 5px; padding: 10px;">
                 Question Bot
                 </h1>
-
-                <img style="position: absolute; top: 13px; left: 250px;" src="botpic.gif" width="100px" height="100px" />
-                <img style="position: absolute; top: 2px; left: 55px;"src="university-of-bristol-1.svg" width="160px" height="140px"/>
+            </div>
+            <div id="images">
+                <img class="images" height="90px" width="90px" src="../static/images/botpic.gif"  th:src="@{/images/botpic.gif}"/>
+                <img class="images" height="110px" width="110px"  src="../static/images/uob.svg"  th:src="@{/images/uob.svg}"/>
             </div>
             <div id="admin">
                 <button class="button" type="admin">Admin</button>
