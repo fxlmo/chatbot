@@ -8,4 +8,5 @@ public class globals {
     public ArrayList<String> threadList;
     public ArrayList<entry> entries;
     public context context;
+    public ArrayList<String> stoplist;
 }

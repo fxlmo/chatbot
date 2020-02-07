@@ -8,5 +8,4 @@ public enum context {
     admin_else,
     user_else,
     list,
-
 }

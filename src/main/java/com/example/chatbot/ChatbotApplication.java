@@ -1,5 +1,6 @@
 package com.example.chatbot;
 
+
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
@@ -21,10 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import static com.example.chatbot.context.admin_else;
-import static com.example.chatbot.context.none;
-import static com.example.chatbot.context.list;
-import static com.example.chatbot.context.user_else;
+import static com.example.chatbot.context.*;
 
 
 //amazon mongo stuff
@@ -53,7 +51,7 @@ public class ChatbotApplication implements CommandLineRunner {
 	    globals.keyList = new ArrayList<>();
 		globals.threadList = new ArrayList<>();
 		globals.context = none;
-
+		globals.stoplist = new ArrayList<>(Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"));
 		//Mongo stuff
 		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://admin:chatbot123@ec2-54-198-1-3.compute-1.amazonaws.com:27017/?authSource=admin&authMechanism=SCRAM-SHA-1"));
 		//This will flag as deprecated but it's fine I promise
@@ -84,7 +82,6 @@ public class ChatbotApplication implements CommandLineRunner {
 			}
 		}
 		globals.entries = new ArrayList<>();
-		System.out.println("got here");
 		getEntries(collection);
 
 		//Calculate all keywords for the mongo entries
@@ -118,15 +115,34 @@ public class ChatbotApplication implements CommandLineRunner {
 	 */
 	public ArrayList<String> getKeyWords(ArrayList<ArrayList<String>> documents, ArrayList<String> newDocument, double threshold) {
 		TFIDFCalc keywordCalc = new TFIDFCalc();
+		HashMap<String, Double> words = new HashMap<>();
 		ArrayList<String> wordList = new ArrayList<>(newDocument);
-		documents.add(new ArrayList<>(wordList));
+		if(!documents.contains(wordList)) {
+			documents.add(new ArrayList<>(wordList));
+		}
 		ArrayList<String> keyWords = new ArrayList<>();
+		wordList.removeAll(globals.stoplist);
+		wordList.removeIf(word -> globals.stoplist.contains(word));
+		for (ArrayList<String> doc : documents) {
+		    doc.removeIf(d -> globals.stoplist.contains(d));
+		}
 		for (String w : wordList) {
+			w = w.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 			double freq = keywordCalc.tfidf(documents, wordList, w);
 			//Threshold is here, change accordingly (average of tf-idf seems to be around
 			//1.5-2.5 depending on the document, but this will change when we add more.
-			if (freq > threshold) {
-				keyWords.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]",""));
+			if (!words.containsKey(w)) {
+			    words.put(w, freq);
+			}
+		}
+		Double avg = 0.0;
+		for (Double v : words.values()) {
+			avg += v;
+		}
+		avg = avg/words.values().size();
+		for (String w : words.keySet()) {
+			if(words.get(w) >= avg) {
+				keyWords.add(w);
 			}
 		}
 	   	return keyWords;
@@ -239,15 +255,10 @@ public class ChatbotApplication implements CommandLineRunner {
 					}
 
 					//converts body of thread to lowercase and removes all punctuation
-					ArrayList<String> convBody = new ArrayList<String>();
-					for (String word : body.split(" ")) {
-						convBody.add(word.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
-					}
-
+					ArrayList<String> convBody = convDoc(body.split(" "));
 					ArrayList<String> keyWords = getKeyWords(documents, convBody, globals.averageTF);
 					int subid = getThreadSize(collection, threadid);
 
-					System.out.println("subthreadid - " + subthreadId);
 					//create container for new entry
 					DBObject newEntry = new BasicDBObject("_id", new BasicDBObject("thread_id", threadid)
 							.append("sub_id", subid))
@@ -261,9 +272,10 @@ public class ChatbotApplication implements CommandLineRunner {
 					globals.keyList.add(keyWords);
 					globals.threadList.add(threadid);
 					entry ent = new entry();
-					globals.entries.add(ent.add(threadid,subthreadId,subid,date,qa,keyWords,body));
 					// Recalculate keywords
+					globals.entries.add(ent.add(threadid,subthreadId,subid,date,qa,keyWords,body));
 					updateKeywords(collection);
+					getEntries(collection);
 					System.out.println("BOT> Inserted new value! Do you want to do anything else?");
 					globals.context = admin_else;
 				} else if (s.equalsIgnoreCase("quit") || globals.context.equals(admin_else) && s.equalsIgnoreCase("no")) {
@@ -279,10 +291,12 @@ public class ChatbotApplication implements CommandLineRunner {
 					globals.context = list;
 				} else if (s.equalsIgnoreCase("recalc") || s.equalsIgnoreCase("recalculate")) {
 					updateKeywords(collection);
+					System.out.println("BOT> Done! Can I help with anything else?");
+					globals.context = admin_else;
 				} else if (s.equalsIgnoreCase("remove all")) {
 					//add confirmation
 					DBCursor cursor = collection.find(new BasicDBObject());
-					for (int i = 0; i < cursor.size(); i++) {
+					for (int i = 0; i <= cursor.size(); i++) {
 						collection.remove(cursor.next());
 					}
 					System.out.println("BOT> Removed all entries. Can I help with anything else?");
@@ -448,7 +462,7 @@ public class ChatbotApplication implements CommandLineRunner {
 	}
 
 	//TODO optimise?? also fix
-	public void updateKeywords(DBCollection collection) {
+	public void updateKeywords(DBCollection collection) throws JSONException {
 		System.out.println("Updating keywords");
 		DBCursor cursorGather = collection.find(new BasicDBObject());
 		ArrayList<ArrayList<String>> documents = new ArrayList<>();
@@ -456,22 +470,18 @@ public class ChatbotApplication implements CommandLineRunner {
 			DBObject theObj = cursorGather.next();
 			String word = (String) theObj.get("body");
 			//System.out.println(theObj.get("_id"));
-			ArrayList<String> convBody = new ArrayList<String>();
 			String[] wList = word.trim().split(" ");
-			for (String w: wList) {
-				convBody.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
-			}
+			ArrayList<String> convBody = convDoc(wList);
 			documents.add(convBody);
 		}
-		System.out.println(documents);
 		DBCursor cursor = collection.find(new BasicDBObject());
 		for (int i = 0; i < cursor.size(); i++) {
 			DBObject theObj = cursor.next();
 
 			String bod = theObj.get("body").toString().trim();
-			String[] document = bod.split(" ");
+			ArrayList<String> document = convDoc(new ArrayList<>(Arrays.asList(bod.split(" "))));
 
-			ArrayList<String> keywords = getKeyWords(documents, new ArrayList<String>(Arrays.asList(document)),globals.averageTF);
+			ArrayList<String> keywords = getKeyWords(documents, document, globals.averageTF);
 			if(!theObj.get("keywords").equals(keywords)) {
 				DBObject newEntry = new BasicDBObject("_id", theObj.get("_id"))
 						.append("subthread", theObj.get("subthread"))
@@ -483,6 +493,7 @@ public class ChatbotApplication implements CommandLineRunner {
 				collection.insert(newEntry);
 			}
 		}
+		getEntries(collection);
 	}
 
 	/**
@@ -510,6 +521,22 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 	}
 
+	public ArrayList<String> convDoc(ArrayList<String> document) {
+		ArrayList<String> convBody = new ArrayList<>();
+		for (String w: document) {
+			convBody.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
+		}
+		return convBody;
+	}
+
+	public ArrayList<String> convDoc(String[] document) {
+		ArrayList<String> convBody = new ArrayList<>();
+		for (String w: document) {
+			convBody.add(w.toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
+		}
+		return convBody;
+	}
+
 	public void getEntries(DBCollection collection) throws JSONException {
 	    //clear entries to readd from mongo
 		globals.entries.clear();
@@ -527,7 +554,7 @@ public class ChatbotApplication implements CommandLineRunner {
 			ent.subid = (int) obj.get("sub_id");
 			ent.body = body;
 			ent.qa = (String)currentDoc.get("qa");
-			ent.subthreadid = (String)currentDoc.get("subtheadid");
+			ent.subthreadid = (String)currentDoc.get("subthread");
 			ent.keywords = (ArrayList<String>)currentDoc.get("keywords");
 			ent.date = (String) currentDoc.get("date");
 			globals.entries.add(ent);

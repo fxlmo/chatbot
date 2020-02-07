@@ -13,15 +13,13 @@ public class entry {
 
     @Override
     public String toString() {
-        String output = "";
-        output = "Thread id - " + this.threadid + '\n' +
-                "Subthread id " + this.subthreadid + '\n' +
+        return  "Thread id - " + this.threadid + '\n' +
+                "Subthread id - " + this.subthreadid + '\n' +
                 "subid - " + this.subid + "\n" +
                 "body - " + this.body + "\n" +
                 "date - " + this.date + "\n" +
                 "qa - " + this.qa + "\n" +
                 "Keywords - " + this.keywords;
-        return output;
     }
 
     public entry add(String threadid, String subthreadid, int subid, String date, String qa, ArrayList<String> keywords, String body) {
