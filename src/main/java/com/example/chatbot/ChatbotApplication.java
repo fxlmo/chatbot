@@ -341,6 +341,10 @@ public class ChatbotApplication implements CommandLineRunner {
 			} else if (questionAsked.equals("admin")) {
 				quit = true;
 				admin = true;
+				out.put("type","test");
+				out.put("content","admin");
+				System.out.println("adagdsfj");
+				return out;
 			} else if (questionAsked.toLowerCase().equals("help") || questionAsked.toLowerCase().equals("?")) {
 				System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
 			} else {

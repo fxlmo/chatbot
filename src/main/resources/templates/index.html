@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css"  rel="stylesheet" />
+    <link href="css/chatbot.css" rel="stylesheet"/>
+
+    <title>Chatbot</title>
+  </head>
+  <body class="text-center">
+    <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand">
+            Chatbot
+            <img class="images" height="60px" width="60px" src="../static/images/botpic.gif"  th:src="@{/images/botpic.gif}"/>
+            <img class="images" height="70px" width="70px"  src="../static/images/uob.svg"  th:src="@{/images/uob.svg}"/></h3>
+          <nav class="nav nav-masthead justify-content-center">
+            <a class="btn btn-info" href="#" role="button">Admin</a>
+          </nav>
+        </div>
+      </header>
+
+      <main role="main" class="inner cover">
+        <!--h1 class="cover-heading">Cover your page.</h1> -->
+        <p class="lead">The 'bot' will check previously answered blackboard forum questions and return any matches, if you're question is still not answered then create a new thread.<br></br>Ask a question!</p>
+        <div id="interface">
+            <div id="chatBox">
+                <div id="chatText">
+                    
+                </div>
+                
+            </div>
+                        
+            <input id="textField" type="text" autofocus="autofocus" onkeypress="return isEnter(event)" placeholder="Type here.">
+        </div>
+        <p class="threadbtn">
+          <a href="#" class="btn btn-lg btn-secondary">Create a new thread</a>
+        </p>
+      </main>
+
+      <footer class="mastfoot mt-auto">
+        <div class="inner">
+          <p>Copyright &copy; 2020 UoB chatbot team</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <script src="js/chatbot.js"></script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
