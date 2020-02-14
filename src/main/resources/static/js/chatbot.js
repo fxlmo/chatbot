@@ -59,28 +59,32 @@ function chatBotAnswer(msg) {
 
 jQuery(document).ready(function($) {
     $("#search-form").submit(function(event) {
-        $.get("test", chatBotAnswer(data))
+        //$.get("test", chatBotAnswer(data))
         // Prevent the form from submitting via the browser.
-        //event.preventDefault();
-        //searchViaAjax(chatBotAnswer("hello"));
+        event.preventDefault();
+        searchViaAjax(chatBotAnswer("test"));
 
     });
 });
 
 function searchViaAjax(msg) {
-    console.log(msg)
-    data["query"] = $("#query").val();
+    console.log(msg);
+    var data = msg;
 
     $.ajax({
         type : "POST",
         contentType : "application/json",
         url : "/index",
         data : JSON.stringify(data),
+        dataType: "json",
         timeout : 100000,
-        success : function(data, msg) {
+        success : function(data) {
+            console.log(data)
+            // TODO: string process JSON response
+            // TYPES: ....
 
-            console.log("SUCCESS: ", data);
-            console.log("res", );
+
+            //console.log("SUCCESS: ", data);
         },
         error : function(e) {
             console.log("ERROR: ", e);
@@ -91,5 +95,4 @@ function searchViaAjax(msg) {
         }
     });
 }
-
 

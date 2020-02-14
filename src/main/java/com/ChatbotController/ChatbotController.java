@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,11 +28,27 @@ public class ChatbotController {
 
 
     @RequestMapping(value = "/index", method = RequestMethod.POST)
-    public String getSearchResultViaAjax(@RequestBody String msg1) {
+    public ResponseEntity<StringObj> getSearchResultViaAjax(@RequestBody String msg1) {
 
 
-        System.out.println("got here");
-        return "index";
+        /*
+        TODO:  - send data to chatbot application
+               - Make sure message is processed correctly
+               - send back json
+               - Process and format string in js
+         */
+        System.out.println("message received");
 
+        return ResponseEntity.ok(new StringObj("received"));
+
+
+    }
+
+    private class StringObj {
+        public String field;
+
+        public StringObj(String s) {
+            field = s;
+        }
     }
 }
