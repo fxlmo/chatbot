@@ -3,9 +3,6 @@ package com.example.chatbot;
 
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.mongodb.MongoDbFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,22 +27,23 @@ import static com.example.chatbot.context.*;
 @SpringBootApplication
 @ComponentScan(basePackageClasses = ChatbotController.class)
 public class ChatbotApplication implements CommandLineRunner {
-	private final MongoDbFactory mongo;
-	private final MongoDatabase databaseAmazon;
-	private final MongoCollection<Document> collectionAmazon;
 
 	@Autowired
-	public ChatbotApplication(MongoDbFactory mongo) {
-		this.mongo = mongo;
-		this.databaseAmazon = mongo.getDb("test");
-		this.collectionAmazon = databaseAmazon.getCollection("threads");
+	public ChatbotApplication() {
+		globals.keyList = new ArrayList<>();
+		globals.threadList = new ArrayList<>();
+		globals.context = none;
+		globals.stoplist = new ArrayList<>(Arrays.asList("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"));
+		globals.entries = new ArrayList<>();
 	}
+
 	globals globals = new globals();
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatbotApplication.class, args);
 	}
 
-	s
 	@Override
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
@@ -336,6 +333,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 		//check input and match to given string
 		//while (!quit) {
+		System.out.println("Question: " + questionAsked);
 			String[] sList = questionAsked.split(" ");
 			if (questionAsked.equals("quit") || questionAsked.equals("exit") || questionAsked.equals("q")) {
 				quit = true;
@@ -344,7 +342,6 @@ public class ChatbotApplication implements CommandLineRunner {
 				admin = true;
 				out.put("type","test");
 				out.put("content","admin");
-				System.out.println("adagdsfj");
 				return out;
 			} else if (questionAsked.toLowerCase().equals("help") || questionAsked.toLowerCase().equals("?")) {
 				System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
@@ -548,9 +545,14 @@ public class ChatbotApplication implements CommandLineRunner {
 		return convBody;
 	}
 
-	public void getEntries(DBCollection collection) throws JSONException {
+	public ArrayList<entry> getEntries(DBCollection collection) throws JSONException {
 	    //clear entries to readd from mongo
-		globals.entries.clear();
+		if(globals.entries != null) {
+			globals.entries.clear();
+		} else {
+			globals.entries = new ArrayList<>();
+		}
+		ArrayList<entry> entries = new ArrayList<>();
 		DBCursor cursor = collection.find(new BasicDBObject());
 		for (int i = 0; i < cursor.size(); i++) {
 			DBObject currentDoc = cursor.next();
@@ -568,7 +570,31 @@ public class ChatbotApplication implements CommandLineRunner {
 			ent.subthreadid = (String)currentDoc.get("subthread");
 			ent.keywords = (ArrayList<String>)currentDoc.get("keywords");
 			ent.date = (String) currentDoc.get("date");
-			globals.entries.add(ent);
+			entries.add(ent);
 		}
+		globals.entries = entries;
+		return entries;
+	}
+
+	public DBCollection getCollection() {
+		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://admin:chatbot123@ec2-54-198-1-3.compute-1.amazonaws.com:27017/?authSource=admin&authMechanism=SCRAM-SHA-1"));
+		//This will flag as deprecated but it's fine I promise
+		DB database = mongoClient.getDB("chatbot");
+		//Specify the collection we're using (it's called threads in this)
+		return database.getCollection("threads");
+	}
+
+	public ArrayList<ArrayList<String>> getDocs (DBCollection collection) {
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<ArrayList<String>> documents = new ArrayList<>();
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject theObj = cursorGather.next();
+			String word = (String) theObj.get("body");
+			//System.out.println(theObj.get("_id"));
+			String[] wList = word.trim().split(" ");
+			ArrayList<String> convBody = convDoc(wList);
+			documents.add(convBody);
+		}
+		return documents;
 	}
 }

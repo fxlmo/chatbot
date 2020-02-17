@@ -1,17 +1,15 @@
 package com.ChatbotController;
 
 import com.example.chatbot.ChatbotApplication;
-import com.mongodb.*;
+import com.mongodb.DBCollection;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
 @Controller
@@ -28,7 +26,7 @@ public class ChatbotController {
 
 
     @RequestMapping(value = "/index", method = RequestMethod.POST)
-    public ResponseEntity<StringObj> getSearchResultViaAjax(@RequestBody String msg1) {
+    public ResponseEntity<StringObj> getSearchResultViaAjax(@RequestBody String msg1) throws JSONException {
 
 
         /*
@@ -37,7 +35,12 @@ public class ChatbotController {
                - send back json
                - Process and format string in js
          */
+        ChatbotApplication app = new ChatbotApplication();
+        DBCollection collection = app.getCollection();
+        ArrayList<ArrayList<String>> documents = app.getDocs(collection);
         System.out.println("message received");
+        System.out.println("Response:");
+        System.out.println(app.normalIO(documents, collection, msg1));
 
         return ResponseEntity.ok(new StringObj("received"));
 

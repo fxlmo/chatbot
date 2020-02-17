@@ -1,5 +1,5 @@
 function isEnter(event) {
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
         sendMessage();
     }
 }
@@ -9,7 +9,7 @@ function isEnter(event) {
 
 function sendMessage() {
     var query = document.getElementById("textField").value;
-    if (query=="") {return;};
+    if (query==="") {return;};
     
     printMessage(query, "user");
     clearInputField();
@@ -20,7 +20,7 @@ function sendMessage() {
 function printMessage(msg, user) {
   var newMsg = document.createElement('DIV');
      
-    if (user == "user") {
+    if (user === "user") {
         newMsg.className = 'userMessage';
 
     } else {
