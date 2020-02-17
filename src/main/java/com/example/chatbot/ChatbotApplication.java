@@ -46,6 +46,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		SpringApplication.run(ChatbotApplication.class, args);
 	}
 
+	s
 	@Override
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
@@ -102,7 +103,7 @@ public class ChatbotApplication implements CommandLineRunner {
 			globals.averageTF = avg;
 		}
 
-		//Begin interaction with user
+		//Begin interaction with usr
 		//normalIO(documents, globals.collection);
 	}
 
