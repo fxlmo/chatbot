@@ -39,7 +39,7 @@ public class ChatbotController {
          */
         System.out.println("message received");
 
-        return ResponseEntity.ok(new StringObj("received"));
+        return ResponseEntity.ok(new StringObj("received, your query was: " + msg1));
 
 
     }

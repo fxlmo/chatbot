@@ -1,19 +1,12 @@
-function isEnter(event) {
-    if (event.keyCode == 13) {
-        sendMessage();
-    }
-}
-//document.getElementById("send").onclick = function() {
-    //sendMessage();
-//}
 
-function sendMessage() {
-    var query = document.getElementById("textField").value;
+
+function sendMessage(query) {
+
     if (query=="") {return;};
     
     printMessage(query, "user");
     clearInputField();
-    searchAjax(query);
+    searchViaAjax(query);
 }
 
 //shows message and updates html
@@ -51,7 +44,6 @@ function chatBotAnswer(msg) {
     var chatBotAnswer = msg;
     printMessage(chatBotAnswer);
     gotoBottom();
-    return msg
 }
 
 
@@ -61,8 +53,9 @@ jQuery(document).ready(function($) {
     $("#search-form").submit(function(event) {
         //$.get("test", chatBotAnswer(data))
         // Prevent the form from submitting via the browser.
+        var query = document.getElementById("textField").value;
         event.preventDefault();
-        searchViaAjax(chatBotAnswer("test"));
+        sendMessage(query);
 
     });
 });
@@ -78,11 +71,11 @@ function searchViaAjax(msg) {
         data : JSON.stringify(data),
         dataType: "json",
         timeout : 100000,
-        success : function(data) {
-            console.log(data)
-            // TODO: string process JSON response
-            // TYPES: ....
+        success : function(response) {
 
+            // TODO: string process JSON response
+            //Setting datatype to json parses the response
+            chatBotAnswer(response.field)
 
             //console.log("SUCCESS: ", data);
         },

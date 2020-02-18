@@ -46,7 +46,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		SpringApplication.run(ChatbotApplication.class, args);
 	}
 
-	s
+
 	@Override
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
