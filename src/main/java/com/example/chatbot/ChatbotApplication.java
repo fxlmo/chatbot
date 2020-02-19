@@ -333,7 +333,8 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 		//check input and match to given string
 		//while (!quit) {
-		System.out.println("Question: " + questionAsked);
+		questionAsked = questionAsked.substring(1, questionAsked.length() - 1);
+		System.out.println("Question received: " + questionAsked);
 			String[] sList = questionAsked.split(" ");
 			if (questionAsked.equals("quit") || questionAsked.equals("exit") || questionAsked.equals("q")) {
 				quit = true;

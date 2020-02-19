@@ -13,7 +13,7 @@ function sendMessage() {
     
     printMessage(query, "user");
     clearInputField();
-    searchAjax(query);
+    searchViaAjax(query);
 }
 
 //shows message and updates html
@@ -47,7 +47,6 @@ function gotoBottom(){
 
 //generate answer here using ajax request to controller
 function chatBotAnswer(msg) {
-    
     var chatBotAnswer = msg;
     printMessage(chatBotAnswer);
     gotoBottom();
@@ -61,6 +60,8 @@ jQuery(document).ready(function($) {
     $("#search-form").submit(function(event) {
         //$.get("test", chatBotAnswer(data))
         // Prevent the form from submitting via the browser.
+        var msg = document.getElementById("textField").value;
+        console.log(msg);
         event.preventDefault();
         searchViaAjax(chatBotAnswer("test"));
 
@@ -68,7 +69,7 @@ jQuery(document).ready(function($) {
 });
 
 function searchViaAjax(msg) {
-    console.log(msg);
+    console.log("search ajax: " + msg);
     var data = msg;
 
     $.ajax({

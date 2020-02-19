@@ -38,9 +38,8 @@ public class ChatbotController {
         ChatbotApplication app = new ChatbotApplication();
         DBCollection collection = app.getCollection();
         ArrayList<ArrayList<String>> documents = app.getDocs(collection);
-        System.out.println("message received");
-        System.out.println("Response:");
-        System.out.println(app.normalIO(documents, collection, msg1));
+        System.out.println("message received: " + msg1);
+        System.out.println("Response: " + app.normalIO(documents, collection, msg1));
 
         return ResponseEntity.ok(new StringObj("received"));
 
