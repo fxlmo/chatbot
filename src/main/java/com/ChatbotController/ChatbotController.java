@@ -41,7 +41,7 @@ public class ChatbotController {
         System.out.println("message received: " + msg1);
         System.out.println("Response: " + app.normalIO(documents, collection, msg1));
 
-        return ResponseEntity.ok(new StringObj("received"));
+        return ResponseEntity.ok(new StringObj("received, your query was: " + msg1));
 
 
     }
