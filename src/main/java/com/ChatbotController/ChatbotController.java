@@ -2,7 +2,9 @@ package com.ChatbotController;
 
 import com.example.chatbot.ChatbotApplication;
 import com.mongodb.DBCollection;
+import com.mongodb.util.JSON;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,7 +32,7 @@ public class ChatbotController {
 
 
     @RequestMapping(value = "/index", method = RequestMethod.POST)
-    public ResponseEntity<StringObj> getSearchResultViaAjax(@RequestBody String msg1) throws JSONException {
+    public ResponseEntity<JSONresponse> getSearchResultViaAjax(@RequestBody String msg1) throws JSONException {
 
 
         /*
@@ -41,18 +43,30 @@ public class ChatbotController {
          */
 
         System.out.println("message received: " + msg1);
-        System.out.println("Response: " + app.normalIO(documents, collection, msg1));
 
-        return ResponseEntity.ok(new StringObj("received, your query was: " + msg1));
+        JSONObject response = app.normalIO(documents, collection, msg1);
+        return ResponseEntity.ok(new JSONresponse(response));
 
 
     }
 
-    private class StringObj {
-        public String field;
+    private class JSONresponse {
+        public String type;
+        public ArrayList<String> content;
 
-        public StringObj(String s) {
-            field = s;
+        public JSONresponse(JSONObject s) throws JSONException {
+            this.type = (String) s.get("type");
+            this.content = new ArrayList<>();
+            if (s.get("type").equals("answer")) {
+                int i = 0;
+                JSONObject JSONcontent = (JSONObject) s.get("content");
+                while(i < JSONcontent.length()) {
+                    this.content.add((String) JSONcontent.get(String.valueOf(i)));
+                    i++;
+                }
+            } else {
+                this.content.add((String) s.get("content"));
+            }
         }
     }
 
@@ -62,12 +76,12 @@ public class ChatbotController {
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
-    public ResponseEntity<StringObj> addThreadViaAjax(@RequestBody String thread) throws JSONException {
+    public ResponseEntity<JSONresponse> addThreadViaAjax(@RequestBody String thread) throws JSONException {
 
 
 
 
-        return ResponseEntity.ok(new StringObj("received, your thread: " + thread));
+        return ResponseEntity.ok(new JSONresponse(new JSONObject()));
 
 
     }

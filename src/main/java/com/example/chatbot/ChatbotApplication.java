@@ -336,102 +336,109 @@ public class ChatbotApplication implements CommandLineRunner {
 		//while (!quit) {
 		questionAsked = questionAsked.substring(1, questionAsked.length() - 1);
 		System.out.println("Question received: " + questionAsked);
-			String[] sList = questionAsked.split(" ");
-			if (questionAsked.equals("quit") || questionAsked.equals("exit") || questionAsked.equals("q")) {
-				quit = true;
-			} else if (questionAsked.equals("admin")) {
-				quit = true;
-				admin = true;
-				out.put("type","test");
-				out.put("content","admin");
-				return out;
-			} else if (questionAsked.toLowerCase().equals("help") || questionAsked.toLowerCase().equals("?")) {
-				System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
-			} else {
-			    ArrayList<String> newDocument = new ArrayList<>();
-				for (String word : sList) {
-					newDocument.add(word.replaceAll("[^a-zA-Z0-9]", ""));
-				}
-				ArrayList<String> wordList = new ArrayList<>(newDocument);
-				documents.add(new ArrayList<>(wordList));
-				ArrayList<String> keyWords = new ArrayList<>();
-				keyWords = getKeyWords(documents,newDocument, globals.averageTF);
-				int index = 0;
-				int threshold = (int) (newDocument.size()*0.05);
-				ArrayList<String> foundThreads = new ArrayList<>();
-				ArrayList<Integer> indices = new ArrayList<>();
-				for (ArrayList<String> keyWordsi : globals.keyList) {
-					int matching = 0;
-					for (String w : keyWords) {
-						if (keyWordsi.contains(w.toLowerCase())) {
-							matching++;
-						}
-					}
-					if (matching > threshold && !foundThreads.contains(globals.entries.get(index).threadid)) {
-						indices.add(index);
-						foundThreads.add(globals.entries.get(index).threadid);
-					}
-					index++;
-				}
-				if (indices.size() > 0) {
-				    ArrayList<String> answers = new ArrayList<>();
-				    String threadid = "";
-				    if (indices.size() == 1) {
-				        //Bot only found 1 match
-						//TODO PRINT OUT ANSWER
-                        threadid = globals.entries.get(indices.get(0)).threadid;
-						answers = getAnswers(collection, threadid);
-					} else {
-				    	//Bot finds 2 matches
-						System.out.println("BOT> I found some information in these threads!");
-						int ind = 0;
-						for (int i : indices) {
-							System.out.println(ind + ") " + globals.entries.get(i).threadid);
-							ind++;
-						}
-						System.out.println("BOT> " + ind++ + ") None of the above");
-						boolean valid = false;
-						//while (!valid) {
-						//	System.out.println("BOT> Select an option.");
-							//String ansLine = in.nextLine();
-							//Integer selectAns = toInt(ansLine);
-							//if (selectAns > ind && selectAns >= 0) {
-							//	System.out.println("BOT> Choose one of the options provided");
-							//} else {
-							//	valid = true;
-							//	if (selectAns == ind) {
-							//		System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
-							//		System.out.println("BOT> Can I help with anything else?");
-							//		globals.context = user_else;
-							//	} else {
-							//		Integer docIndex = indices.get(selectAns);
-							//		threadid = globals.entries.get(docIndex).threadid;
-							//		answers = getAnswers(collection,threadid);
-							//	}
-						//	}
-						//}
-					}
-					if (answers.size() > 0) {
-						int ansIndex = 1;
-						System.out.println("BOT> I found these answers:");
-						out.put("type","answer");
-						out.put("content",answers);
-						for (String a : answers) {
-							System.out.println("BOT> Answer " + ansIndex + " -- " + a);
-							ansIndex++;
-						}
-						System.out.println("BOT> For more information, check the '" + threadid + "' thread");
-					} else {
-						System.out.println("BOT> I can't find an answer for this question because it hasn't been answered yet.");
-					}
-					System.out.println("BOT> Can I help with anything else?");
-					globals.context = user_else;
-				} else {
-					out.put("type","no-answer");
-					out.put("content","");
-					System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
-				}
+		String[] sList = questionAsked.split(" ");
+		if (questionAsked.equals("admin")) {
+			out.put("type","test");
+			out.put("content","admin");
+			return out;
+		} else if (questionAsked.toLowerCase().equals("help") || questionAsked.toLowerCase().equals("?")) {
+			System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
+		} else {
+			ArrayList<String> newDocument = new ArrayList<>();
+			for (String word : sList) {
+				newDocument.add(word.replaceAll("[^a-zA-Z0-9]", ""));
 			}
+			ArrayList<String> wordList = new ArrayList<>(newDocument);
+			documents.add(new ArrayList<>(wordList));
+			ArrayList<String> keyWords = new ArrayList<>();
+			keyWords = getKeyWords(documents,newDocument, globals.averageTF);
+			System.out.println("Keywords of query: " + keyWords);
+			int index = 0;
+			int threshold = (int) (newDocument.size()*0.05);
+			ArrayList<String> foundThreads = new ArrayList<>();
+			ArrayList<Integer> indices = new ArrayList<>();
+			globals.keyList = getAllKeyWords(collection, documents);
+
+			for (ArrayList<String> keyWordsi : globals.keyList) {
+				int matching = 0;
+				for (String w : keyWords) {
+					if (keyWordsi.contains(w.toLowerCase())) {
+						matching++;
+					}
+				}
+				if (matching > threshold && !foundThreads.contains(globals.entries.get(index).threadid)) {
+					indices.add(index);
+					foundThreads.add(globals.entries.get(index).threadid);
+				}
+				index++;
+			}
+			if (indices.size() > 0) {
+				ArrayList<String> answers = new ArrayList<>();
+				String threadid = "";
+				if (indices.size() == 1) {
+					//Bot only found 1 match
+					threadid = globals.entries.get(indices.get(0)).threadid;
+					answers = getAnswers(collection, threadid);
+				} else {
+					//Bot finds 2 matches
+					System.out.println("BOT> I found some information in these threads!");
+					int ind = 0;
+					for (int i : indices) {
+						System.out.println(ind + ") " + globals.entries.get(i).threadid);
+						ind++;
+					}
+					System.out.println("BOT> " + ind++ + ") None of the above");
+					boolean valid = false;
+					//while (!valid) {
+					//	System.out.println("BOT> Select an option.");
+					//String ansLine = in.nextLine();
+					//Integer selectAns = toInt(ansLine);
+					//if (selectAns > ind && selectAns >= 0) {
+					//	System.out.println("BOT> Choose one of the options provided");
+					//} else {
+					//	valid = true;
+					//	if (selectAns == ind) {
+					//		System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
+					//		System.out.println("BOT> Can I help with anything else?");
+					//		globals.context = user_else;
+					//	} else {
+					//		Integer docIndex = indices.get(selectAns);
+					//		threadid = globals.entries.get(docIndex).threadid;
+					//		answers = getAnswers(collection,threadid);
+					//	}
+					//	}
+					//}
+				}
+				if (answers.size() > 0) {
+					int ansIndex = 1;
+					System.out.println("BOT> I found these answers:");
+					out.put("type","answer");
+					// TODO serialise answers
+					JSONObject jsonAnswer = new JSONObject();
+					int i = 0;
+					for (String ans : answers) {
+						jsonAnswer.put(String.valueOf(i), ans);
+						i++;
+					}
+					out.put("content",jsonAnswer);
+					for (String a : answers) {
+						System.out.println("BOT> Answer " + ansIndex + " -- " + a);
+						ansIndex++;
+					}
+					System.out.println("BOT> For more information, check the '" + threadid + "' thread");
+				} else {
+					System.out.println("BOT> I can't find an answer for this question because it hasn't been answered yet.");
+					out.put("type","error");
+					out.put("content","unanswered");
+				}
+				System.out.println("BOT> Can I help with anything else?");
+				globals.context = user_else;
+			} else {
+				System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
+				out.put("type","no-answer");
+				out.put("content","");
+			}
+		}
 		//}
 
 		//goto admin interaction (check password goes here)
@@ -598,5 +605,16 @@ public class ChatbotApplication implements CommandLineRunner {
 			documents.add(convBody);
 		}
 		return documents;
+	}
+
+
+	public ArrayList<ArrayList<String>> getAllKeyWords(DBCollection collection, ArrayList<ArrayList<String>> documents) {
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<ArrayList<String>> keyWords = new ArrayList<>();
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject theObj = cursorGather.next();
+			keyWords.add((ArrayList<String>) theObj.get("keywords"));
+		}
+		return keyWords;
 	}
 }

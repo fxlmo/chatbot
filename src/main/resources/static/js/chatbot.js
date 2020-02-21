@@ -1,11 +1,4 @@
-function isEnter(event) {
-    if (event.keyCode === 13) {
-        sendMessage();
-    }
-}
-//document.getElementById("send").onclick = function() {
-    //sendMessage();
-//}
+
 
 function sendMessage(query) {
 
@@ -54,7 +47,7 @@ function chatBotAnswer(msg) {
 
 
 
-
+//when user asks something these two functions below are invoked
 jQuery(document).ready(function($) {
     $("#search-form").submit(function(event) {
         //$.get("test", chatBotAnswer(data))
@@ -67,7 +60,7 @@ jQuery(document).ready(function($) {
 
     });
 });
-
+//posts to controller which then provides response using model
 function searchViaAjax(msg) {
     console.log("search ajax: " + msg);
     var data = msg;
@@ -87,7 +80,19 @@ function searchViaAjax(msg) {
             answer - answer found. will return the answers in a JSON object.
             */
             //Setting datatype to json parses the response
-            chatBotAnswer(response.field)
+            console.log(response.content[1]);
+
+            if (response.type == "answer"){
+                chatBotAnswer("Found these answers:");
+                (response.content).forEach(element => {
+                    chatBotAnswer(element);
+                });
+            } else if (response.type == "error" || response.type == "no-answer" ){
+                chatBotAnswer("I could not find anything");
+            }
+
+
+            
 
             //console.log("SUCCESS: ", data);
         },
@@ -100,4 +105,55 @@ function searchViaAjax(msg) {
         }
     });
 }
+
+//when add button is pressed this function in invoked
+Query(document).ready(function($) {
+    $("#addThreadSubmit").submit(function(event) {
+
+
+        var ID = document.getElementById("ID-input").value;
+        var date = document.getElementById("Date-input").value;
+        var question = document.getElementById("Question-input").value;
+        var answer = document.getElementById("Answer-input").value;
+
+        event.preventDefault();
+
+        var threadDetails = {"ID":ID, "date":date, "question":question, "answer":answer}
+        //combine all variables into Json
+
+        addThreadViaAjax(thread                                                     )
+
+
+
+    });
+});
+
+
+//Post request to add a new thread
+function addThreadViaAjax(thread) {
+
+    var data = thread;
+
+    $.ajax({
+        type : "POST",
+        contentType : "application/json",
+        url : "/admin",
+        data : JSON.stringify(data),
+        dataType: "json",
+        timeout : 100000,
+        success : function(response) {
+            //TODO
+            //format thread details into a JSON then interact with model/controller
+
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+
+        },
+        done : function(e) {
+            console.log("DONE");
+        }
+    });
+}
+
 
