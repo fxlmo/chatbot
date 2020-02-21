@@ -18,6 +18,10 @@ public class ChatbotController {
     @Autowired
     ChatbotApplication ca;
 
+    ChatbotApplication app = new ChatbotApplication();
+    DBCollection collection = app.getCollection();
+    ArrayList<ArrayList<String>> documents = app.getDocs(collection);
+
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public String questionForm() {
         return "index";
@@ -35,9 +39,7 @@ public class ChatbotController {
                - send back json
                - Process and format string in js
          */
-        ChatbotApplication app = new ChatbotApplication();
-        DBCollection collection = app.getCollection();
-        ArrayList<ArrayList<String>> documents = app.getDocs(collection);
+
         System.out.println("message received: " + msg1);
         System.out.println("Response: " + app.normalIO(documents, collection, msg1));
 
@@ -53,4 +55,22 @@ public class ChatbotController {
             field = s;
         }
     }
+
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String adminPage() {
+        return "admin";
+    }
+
+    @RequestMapping(value = "/admin", method = RequestMethod.POST)
+    public ResponseEntity<StringObj> addThreadViaAjax(@RequestBody String thread) throws JSONException {
+
+
+
+
+        return ResponseEntity.ok(new StringObj("received, your thread: " + thread));
+
+
+    }
+
+
 }

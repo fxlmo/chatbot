@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-function isEnter(event) {
-    if (event.keyCode === 13) {
-        sendMessage();
-    }
-}
-//document.getElementById("send").onclick = function() {
-    //sendMessage();
-//}
-
-function sendMessage() {
-    var query = document.getElementById("textField").value;
-    if (query==="") {return;};
-=======
-
 
 function sendMessage(query) {
 
     if (query=="") {return;};
->>>>>>> a923ad209e6a95b44eb5fa2961d94b3d8ff6ff8a
+
     
     printMessage(query, "user");
     clearInputField();
@@ -67,12 +52,12 @@ jQuery(document).ready(function($) {
     $("#search-form").submit(function(event) {
         //$.get("test", chatBotAnswer(data))
         // Prevent the form from submitting via the browser.
-<<<<<<< HEAD
-        var msg = document.getElementById("textField").value;
-        console.log(msg);
-=======
+
+        //var msg = document.getElementById("textField").value;
+        //console.log(msg);
+
         var query = document.getElementById("textField").value;
->>>>>>> a923ad209e6a95b44eb5fa2961d94b3d8ff6ff8a
+
         event.preventDefault();
         sendMessage(query);
 
@@ -107,4 +92,52 @@ function searchViaAjax(msg) {
         }
     });
 }
+
+
+jQuery(document).ready(function($) {
+    $("#addThreadSubmit").submit(function(event) {
+        
+
+        var ID = document.getElementById("ID-input").value;
+        var date = document.getElementById("Date-input").value;
+        var question = document.getElementById("Question-input").value;
+        var answer = document.getElementById("Answer-input").value;
+
+        event.preventDefault();
+
+        //combine all variables into Json
+
+        addThreadViaAjax(thread)
+        
+
+
+    });
+});
+
+function addThreadViaAjax(thread) {
+
+    var data = thread;
+
+    $.ajax({
+        type : "POST",
+        contentType : "application/json",
+        url : "/admin",
+        data : JSON.stringify(data),
+        dataType: "json",
+        timeout : 100000,
+        success : function(response) {
+            //TODO
+            //format thread details into a JSON then interact with model/controller
+        
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+            
+        },
+        done : function(e) {
+            console.log("DONE");
+        }
+    });
+}
+
 
