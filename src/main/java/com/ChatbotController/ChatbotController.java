@@ -77,12 +77,17 @@ public class ChatbotController {
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
-    public ResponseEntity<String> addThreadViaAjax(@RequestBody String thread) throws JSONException {
+    public ResponseEntity<JSONresponse> addThreadViaAjax(@RequestBody String thread) throws JSONException {
 
+        JSONObject jsonThread = new JSONObject(thread);
+        System.out.println(jsonThread);
 
-        System.out.println(thread);
+        //app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
 
-        return ResponseEntity.ok("success");
+        JSONObject response = new JSONObject();
+        response.put("type","success");
+        response.put("content","null");
+        return ResponseEntity.ok(new JSONresponse(response));
 
 
     }

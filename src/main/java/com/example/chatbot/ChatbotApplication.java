@@ -367,9 +367,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		//}
 
 		//goto admin interaction (check password goes here)
-		if (admin) {
-			adminIO(collection,documents);
-		}
+
 		return out;
 	}
 

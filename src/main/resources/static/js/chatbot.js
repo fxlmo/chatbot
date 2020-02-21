@@ -114,7 +114,13 @@ function searchViaAjax(msg) {
         var subID = document.getElementById("subID-input").value;
         var date = document.getElementById("Date-input").value;
         var body = document.getElementById("Body-input").value;
-        var qa = document.getElementById("Answer-input").value;
+        console.log("here")
+        var qa;
+        var q = $('#q input:radio:checked').val();
+        console.log("got")
+        if (q){
+            qa = "q";
+        } else { qa ="a";}
 
         event.preventDefault();
 
@@ -123,7 +129,9 @@ function searchViaAjax(msg) {
         console.log(threadDetails);
         //combine all variables into Json
 
-        addThreadViaAjax(threadDetails)                                                     
+        addThreadViaAjax(threadDetails)    
+        
+        $('#addThreadModal').modal('hide');
 
 
 
@@ -144,8 +152,8 @@ function addThreadViaAjax(thread) {
         dataType: "json",
         timeout : 100000,
         success : function(response) {
-            //TODO
-            //format thread details into a JSON then interact with model/controller
+            console.log(response);
+            
 
         },
         error : function(e) {
