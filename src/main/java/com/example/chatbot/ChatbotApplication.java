@@ -3,6 +3,7 @@ package com.example.chatbot;
 
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import static com.example.chatbot.context.*;
 
@@ -164,148 +164,73 @@ public class ChatbotApplication implements CommandLineRunner {
 
 	/**
 	 * Administrative IO - interaction when entering admin mode
-	 * @param collection	The collection
-	 * @param documents		Current documents
+	 * @param collection    The collection
+	 * @param documents        Current documents
 	 * @throws JSONException
+	 * @return
 	 */
-	public void adminIO(DBCollection collection, ArrayList<ArrayList<String>> documents) throws JSONException {
+	public void adminAdd(DBCollection collection, ArrayList<ArrayList<String>> documents, String receivedThreadId, String receivedSubId, String receivedBody, String receivedDate, String receivedQA) throws JSONException {
 		boolean quit = false;
 		System.out.println("BOT> Welcome admin user! What do you want to do?");
 		globals.context = none;
-		while (!quit) {
-			Scanner in = new Scanner(System.in);
-			String s = in.nextLine();
-			if (globals.context.equals(list)) {
-				if (s.equalsIgnoreCase("")) {
-					for (entry ent : globals.entries) {
-						System.out.println("===================");
-						System.out.println(ent);
-					}
-					System.out.println("===================");
-					System.out.println("BOT> Can I help with anything else?");
-					globals.context = admin_else;
-				} else if (s.equalsIgnoreCase("quit") || s.equalsIgnoreCase("q") || s.equalsIgnoreCase("exit")) {
-					System.out.println("BOT> Ok, can I help with anything else?");
-					globals.context = admin_else;
-				} else {
-					System.out.println("BOT> Couldn't find this thread id. Try again, or type quit to cancel");
-				}
-			} else {
-				if (s.equalsIgnoreCase("add")) {
-					globals.context = none;
-					Boolean valid = false;
-					String threadid = "";
-					String subthreadId = "";
-					while (!valid) {
-						System.out.println("BOT> Specify thread id");
-						threadid = in.nextLine();
-						if (threadid == null) {
-							System.out.println("BOT> Sorry, invalid thread id, please try again");
-						} else {
-							valid = true;
-						}
-					}
-					valid = false;
 
-					while (!valid) {
-						System.out.println("BOT> Specify subthread id");
-						subthreadId = in.nextLine();
-						if (subthreadId == null) {
-							System.out.println("BOT> Sorry, invalid subthread id, please try again");
-						} else {
-							valid = true;
-						}
-					}
-					valid = false;
+		//converts body of thread to lowercase and removes all punctuation
+		ArrayList<String> convBody = convDoc(receivedBody.split(" "));
+		ArrayList<String> keyWords = getKeyWords(documents, convBody, globals.averageTF);
+		int subid = getThreadSize(collection, receivedThreadId);
 
-					String date = "";
-					while (!valid) {
-						System.out.println("BOT> Enter date submitted (dd-MM-yyyy)");
-						date = in.nextLine();
-						if (!isValidDate(date)) {
-							System.out.println("BOT> Sorry, invalid date, try entering again");
-						} else {
-							valid = true;
-						}
-					}
+		//create container for new entry
+		DBObject newEntry = new BasicDBObject("_id", new BasicDBObject("thread_id", receivedThreadId)
+				.append("sub_id", subid))
+				.append("subthread", receivedSubId)
+				.append("date", receivedDate)
+				.append("body", receivedBody)
+				.append("qa", receivedQA)
+				.append("keywords", keyWords);
+		collection.insert(newEntry);
 
-					String body = "";
-					valid = false;
-					while (!valid) {
-						System.out.println("BOT> Enter the body of the thread");
-						body = in.nextLine();
-						if (body.equals("")) {
-							System.out.println("BOT> The body cannot be empty");
-						} else {
-							valid = true;
-						}
-					}
-			String qa = "";
-					valid = false;
-					while (!valid) {
-						System.out.println("BOT> Is this a question (q) or an answer (a)?");
-						qa = in.nextLine().toLowerCase();
-						if (qa.equals("q") || qa.equals("a")) {
-							valid = true;
-						} else {
-							System.out.println("BOT> Please enter either 'q' or 'a'");
-						}
-					}
+		globals.keyList.add(keyWords);
+		globals.threadList.add(receivedThreadId);
+		entry ent = new entry();
+		// Recalculate keywords
+		globals.entries.add(ent.add(receivedThreadId, receivedSubId, subid, receivedDate, receivedQA, keyWords, receivedBody));
+		updateKeywords(collection);
+		getEntries(collection);
+		System.out.println("BOT> Inserted new value! Do you want to do anything else?");
+		globals.context = admin_else;
+		//} else if (s.equalsIgnoreCase("remove all")) {
+		//	//add confirmation
+		//	DBCursor cursor = collection.find(new BasicDBObject());
+		//	for (int i = 0; i <= cursor.size(); i++) {
+		//		collection.remove(cursor.next());
+		//	}
+		//	System.out.println("BOT> Removed all entries. Can I help with anything else?");
+		//	globals.context = admin_else;
+		//}
+	}
 
-					//converts body of thread to lowercase and removes all punctuation
-					ArrayList<String> convBody = convDoc(body.split(" "));
-					ArrayList<String> keyWords = getKeyWords(documents, convBody, globals.averageTF);
-					int subid = getThreadSize(collection, threadid);
+	public JSONObject adminList(ArrayList<ArrayList<String>> documents, DBCollection collection, String requestedID) throws JSONException {
+		JSONObject out = new JSONObject();
+		if (requestedID.equalsIgnoreCase("")) {
+			ArrayList<entry> entries = new ArrayList<>();
+			for (entry ent : globals.entries) {
+				System.out.println("===================");
+				System.out.println(ent);
 
-					//create container for new entry
-					DBObject newEntry = new BasicDBObject("_id", new BasicDBObject("thread_id", threadid)
-							.append("sub_id", subid))
-							.append("subthread", subthreadId)
-							.append("date", date)
-							.append("body", body)
-							.append("qa", qa)
-							.append("keywords", keyWords);
-					collection.insert(newEntry);
-
-					globals.keyList.add(keyWords);
-					globals.threadList.add(threadid);
-					entry ent = new entry();
-					// Recalculate keywords
-					globals.entries.add(ent.add(threadid,subthreadId,subid,date,qa,keyWords,body));
-					updateKeywords(collection);
-					getEntries(collection);
-					System.out.println("BOT> Inserted new value! Do you want to do anything else?");
-					globals.context = admin_else;
-				} else if (s.equalsIgnoreCase("quit") || globals.context.equals(admin_else) && s.equalsIgnoreCase("no")) {
-					System.out.println("BOT> Ok, bye. [RETURNING TO MAIN USER]");
-					//TODO update locally held records??
-					quit = true;
-					//normalIO(documents, collection);
-				} else if (s.equalsIgnoreCase("help") || s.equals("?")) {
-					System.out.println("BOT> Type 'add' to add a new record, or quit to return to the main user");
-					globals.context = none;
-				} else if (s.equalsIgnoreCase("list")) {
-					System.out.println("BOT> Type a threadid to list all entries from that thread, or leave blank to show all");
-					globals.context = list;
-				} else if (s.equalsIgnoreCase("recalc") || s.equalsIgnoreCase("recalculate")) {
-					updateKeywords(collection);
-					System.out.println("BOT> Done! Can I help with anything else?");
-					globals.context = admin_else;
-				} else if (s.equalsIgnoreCase("remove all")) {
-					//add confirmation
-					DBCursor cursor = collection.find(new BasicDBObject());
-					for (int i = 0; i <= cursor.size(); i++) {
-						collection.remove(cursor.next());
-					}
-					System.out.println("BOT> Removed all entries. Can I help with anything else?");
-					globals.context = admin_else;
-				//TODO add delete, list, and edit functionality
-				} else {
-					System.out.println("BOT> Did not recognise this command. Try again.");
-					globals.context = none;
-				}
 			}
+			out.put("type", "found");
+			out.put("content", entries);
+			System.out.println("===================");
+			System.out.println("BOT> Can I help with anything else?");
+			globals.context = admin_else;
+		} else {
+			//look for thread
+			System.out.println("BOT> Couldn't find this thread id. Try again, or type quit to cancel");
+			out.put("context", "list");
+			out.put("type", "not-found");
+			out.put("content", "null");
 		}
+		return out;
 	}
 
 	/**
