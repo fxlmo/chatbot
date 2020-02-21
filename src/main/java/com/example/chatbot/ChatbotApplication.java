@@ -44,10 +44,6 @@ public class ChatbotApplication implements CommandLineRunner {
 		SpringApplication.run(ChatbotApplication.class, args);
 	}
 
-<<<<<<< HEAD
-=======
-
->>>>>>> a923ad209e6a95b44eb5fa2961d94b3d8ff6ff8a
 	@Override
 	public void run(String... args) throws Exception {
 	    globals.keyList = new ArrayList<>();
@@ -340,11 +336,7 @@ public class ChatbotApplication implements CommandLineRunner {
 		questionAsked = questionAsked.substring(1, questionAsked.length() - 1);
 		System.out.println("Question received: " + questionAsked);
 			String[] sList = questionAsked.split(" ");
-			if (questionAsked.equals("quit") || questionAsked.equals("exit") || questionAsked.equals("q")) {
-				quit = true;
-			} else if (questionAsked.equals("admin")) {
-				quit = true;
-				admin = true;
+			if (questionAsked.equals("admin")) {
 				out.put("type","test");
 				out.put("content","admin");
 				return out;
@@ -359,10 +351,13 @@ public class ChatbotApplication implements CommandLineRunner {
 				documents.add(new ArrayList<>(wordList));
 				ArrayList<String> keyWords = new ArrayList<>();
 				keyWords = getKeyWords(documents,newDocument, globals.averageTF);
+				System.out.println("Keywords of query: " + keyWords);
 				int index = 0;
 				int threshold = (int) (newDocument.size()*0.05);
 				ArrayList<String> foundThreads = new ArrayList<>();
 				ArrayList<Integer> indices = new ArrayList<>();
+				globals.keyList = getAllKeyWords(collection, documents);
+
 				for (ArrayList<String> keyWordsi : globals.keyList) {
 					int matching = 0;
 					for (String w : keyWords) {
@@ -381,7 +376,6 @@ public class ChatbotApplication implements CommandLineRunner {
 				    String threadid = "";
 				    if (indices.size() == 1) {
 				        //Bot only found 1 match
-						//TODO PRINT OUT ANSWER
                         threadid = globals.entries.get(indices.get(0)).threadid;
 						answers = getAnswers(collection, threadid);
 					} else {
@@ -418,7 +412,14 @@ public class ChatbotApplication implements CommandLineRunner {
 						int ansIndex = 1;
 						System.out.println("BOT> I found these answers:");
 						out.put("type","answer");
-						out.put("content",answers);
+						// TODO serialise answers
+						JSONObject jsonAnswer = new JSONObject();
+						int i = 0;
+						for (String ans : answers) {
+							jsonAnswer.put(String.valueOf(i), ans);
+							i++;
+						}
+						out.put("content",jsonAnswer);
 						for (String a : answers) {
 							System.out.println("BOT> Answer " + ansIndex + " -- " + a);
 							ansIndex++;
@@ -426,13 +427,15 @@ public class ChatbotApplication implements CommandLineRunner {
 						System.out.println("BOT> For more information, check the '" + threadid + "' thread");
 					} else {
 						System.out.println("BOT> I can't find an answer for this question because it hasn't been answered yet.");
+						out.put("type","error");
+						out.put("content","unanswered");
 					}
 					System.out.println("BOT> Can I help with anything else?");
 					globals.context = user_else;
 				} else {
+					System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
 					out.put("type","no-answer");
 					out.put("content","");
-					System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
 				}
 			}
 		//}
@@ -601,5 +604,15 @@ public class ChatbotApplication implements CommandLineRunner {
 			documents.add(convBody);
 		}
 		return documents;
+	}
+
+	public ArrayList<ArrayList<String>> getAllKeyWords(DBCollection collection, ArrayList<ArrayList<String>> documents) {
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<ArrayList<String>> keyWords = new ArrayList<>();
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject theObj = cursorGather.next();
+			keyWords.add((ArrayList<String>) theObj.get("keywords"));
+		}
+		return keyWords;
 	}
 }

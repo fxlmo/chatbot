@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 function isEnter(event) {
     if (event.keyCode === 13) {
         sendMessage();
@@ -8,17 +7,10 @@ function isEnter(event) {
     //sendMessage();
 //}
 
-function sendMessage() {
-    var query = document.getElementById("textField").value;
-    if (query==="") {return;};
-=======
-
-
 function sendMessage(query) {
 
-    if (query=="") {return;};
->>>>>>> a923ad209e6a95b44eb5fa2961d94b3d8ff6ff8a
-    
+    var query = document.getElementById("textField").value;
+    if (query==="") {return;};
     printMessage(query, "user");
     clearInputField();
     searchViaAjax(query);
@@ -67,12 +59,9 @@ jQuery(document).ready(function($) {
     $("#search-form").submit(function(event) {
         //$.get("test", chatBotAnswer(data))
         // Prevent the form from submitting via the browser.
-<<<<<<< HEAD
         var msg = document.getElementById("textField").value;
         console.log(msg);
-=======
         var query = document.getElementById("textField").value;
->>>>>>> a923ad209e6a95b44eb5fa2961d94b3d8ff6ff8a
         event.preventDefault();
         sendMessage(query);
 
@@ -93,6 +82,10 @@ function searchViaAjax(msg) {
         success : function(response) {
 
             // TODO: string process JSON response
+            /* types of response:
+            error - signifies something went wrong: no answer, or question not found
+            answer - answer found. will return the answers in a JSON object.
+            */
             //Setting datatype to json parses the response
             chatBotAnswer(response.field)
 
