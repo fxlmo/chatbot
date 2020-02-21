@@ -107,38 +107,40 @@ function searchViaAjax(msg) {
 }
 
 //when add button is pressed this function in invoked
-Query(document).ready(function($) {
-    $("#addThreadSubmit").submit(function(event) {
-
-
+    $("#addThreadSubmit").click(function(event) {
+        console.log("got here")
+        //thread ID, subthread ID, body with radio buttons for if an entry is either a question or answer
         var ID = document.getElementById("ID-input").value;
+        var subID = document.getElementById("subID-input").value;
         var date = document.getElementById("Date-input").value;
-        var question = document.getElementById("Question-input").value;
-        var answer = document.getElementById("Answer-input").value;
+        var body = document.getElementById("Body-input").value;
+        var qa = document.getElementById("Answer-input").value;
 
         event.preventDefault();
 
-        var threadDetails = {"ID":ID, "date":date, "question":question, "answer":answer}
+        var threadDetails = {"ID":ID, "SubID":subID, "date":date, "body":body, "qa":qa}
+
+        console.log(threadDetails);
         //combine all variables into Json
 
-        addThreadViaAjax(thread                                                     )
+        addThreadViaAjax(threadDetails)                                                     
 
 
 
     });
-});
+
 
 
 //Post request to add a new thread
 function addThreadViaAjax(thread) {
 
-    var data = thread;
+    
 
     $.ajax({
         type : "POST",
         contentType : "application/json",
         url : "/admin",
-        data : JSON.stringify(data),
+        data : JSON.stringify(thread),
         dataType: "json",
         timeout : 100000,
         success : function(response) {

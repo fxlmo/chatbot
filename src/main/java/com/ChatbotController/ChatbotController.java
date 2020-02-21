@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Controller
 public class ChatbotController {
@@ -76,12 +77,12 @@ public class ChatbotController {
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
-    public ResponseEntity<JSONresponse> addThreadViaAjax(@RequestBody String thread) throws JSONException {
+    public ResponseEntity<String> addThreadViaAjax(@RequestBody String thread) throws JSONException {
 
 
+        System.out.println(thread);
 
-
-        return ResponseEntity.ok(new JSONresponse(new JSONObject()));
+        return ResponseEntity.ok("success");
 
 
     }

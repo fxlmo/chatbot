@@ -76,6 +76,11 @@ h3 {
   text-decoration: none;
 }
 
+#Body-input{
+  height: 100px;
+}
+
+
 @media (min-width: 48em) {
     .masthead-brand {
       float: left;
@@ -84,4 +89,5 @@ h3 {
     .nav-masthead {
       float: right;
     }
+
   }
