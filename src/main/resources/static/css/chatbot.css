@@ -9,6 +9,10 @@ body {
     align-content: right;
 }
 
+h3 {
+  color: inherit;
+}
+
 #interface {
     width: 800px;
     background-color: #3e3e3e;
@@ -67,9 +71,15 @@ body {
     padding-top: 2cm;
 }
 
+.masthead-brand a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
 @media (min-width: 48em) {
     .masthead-brand {
       float: left;
+     
     }
     .nav-masthead {
       float: right;
