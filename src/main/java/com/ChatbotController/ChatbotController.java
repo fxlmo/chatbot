@@ -1,8 +1,10 @@
 package com.ChatbotController;
 
+import java.util.ArrayList;
+
 import com.example.chatbot.ChatbotApplication;
 import com.mongodb.DBCollection;
-import com.mongodb.util.JSON;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 @Controller
 public class ChatbotController {
@@ -45,8 +44,13 @@ public class ChatbotController {
 
         System.out.println("message received: " + msg1);
 
-        JSONObject response = app.normalIO(documents, collection, msg1);
-        return ResponseEntity.ok(new JSONresponse(response));
+        //Send JSON message over to backend
+        // JSONObject response = app.normalIO(documents, collection, msg1);
+        // return ResponseEntity.ok(new JSONresponse(response));
+
+        ArrayList<String> response = new ArrayList<>();
+        response.add("just testing");
+        return ResponseEntity.ok(new JSONresponse("test", response));
 
 
     }
@@ -69,6 +73,11 @@ public class ChatbotController {
                 this.content.add((String) s.get("content"));
             }
         }
+
+        public JSONresponse(String type, ArrayList<String> content) {
+            this.type = type;
+            this.content = content;
+        }
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
@@ -78,18 +87,10 @@ public class ChatbotController {
 
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
     public ResponseEntity<JSONresponse> addThreadViaAjax(@RequestBody String thread) throws JSONException {
-
-        JSONObject jsonThread = new JSONObject(thread);
-        System.out.println(jsonThread);
-
-        //app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
-
-        JSONObject response = new JSONObject();
-        response.put("type","success");
-        response.put("content","null");
-        return ResponseEntity.ok(new JSONresponse(response));
-
-
+        // return ResponseEntity.ok(new JSONresponse(new JSONObject()));
+        ArrayList<String> response = new ArrayList<>();
+        response.add("just testing");
+        return ResponseEntity.ok(new JSONresponse("test", response));
     }
 
 

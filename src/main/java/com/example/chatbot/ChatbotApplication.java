@@ -1,16 +1,9 @@
 package com.example.chatbot;
 
 
-import com.ChatbotController.ChatbotController;
-import com.mongodb.*;
-import com.mongodb.util.JSON;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import static com.example.chatbot.context.admin_else;
+import static com.example.chatbot.context.none;
+import static com.example.chatbot.context.user_else;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +11,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static com.example.chatbot.context.*;
+import com.ChatbotController.ChatbotController;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 
 //amazon mongo stuff
@@ -170,7 +178,6 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @return
 	 */
 	public void adminAdd(DBCollection collection, ArrayList<ArrayList<String>> documents, String receivedThreadId, String receivedSubId, String receivedBody, String receivedDate, String receivedQA) throws JSONException {
-		boolean quit = false;
 		System.out.println("BOT> Welcome admin user! What do you want to do?");
 		globals.context = none;
 
@@ -241,9 +248,6 @@ public class ChatbotApplication implements CommandLineRunner {
 	 */
 
 	public JSONObject normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection, String questionAsked) throws JSONException {
-		boolean quit = false;
-		boolean admin = false;
-
 		DBCursor cursor = collection.find(new BasicDBObject());
 		JSONObject out = new JSONObject();
 		if (cursor.size() == 0) {
@@ -313,7 +317,6 @@ public class ChatbotApplication implements CommandLineRunner {
 						ind++;
 					}
 					System.out.println("BOT> " + ind++ + ") None of the above");
-					boolean valid = false;
 					//while (!valid) {
 					//	System.out.println("BOT> Select an option.");
 					//String ansLine = in.nextLine();
