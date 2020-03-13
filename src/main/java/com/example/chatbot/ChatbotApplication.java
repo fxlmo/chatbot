@@ -3,7 +3,6 @@ package com.example.chatbot;
 
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
-import com.mongodb.util.JSON;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,7 +169,6 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @return
 	 */
 	public void adminAdd(DBCollection collection, ArrayList<ArrayList<String>> documents, String receivedThreadId, String receivedSubId, String receivedBody, String receivedDate, String receivedQA) throws JSONException {
-		boolean quit = false;
 		System.out.println("BOT> Welcome admin user! What do you want to do?");
 		globals.context = none;
 
@@ -241,9 +239,6 @@ public class ChatbotApplication implements CommandLineRunner {
 	 */
 
 	public JSONObject normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection, String questionAsked) throws JSONException {
-		boolean quit = false;
-		boolean admin = false;
-
 		DBCursor cursor = collection.find(new BasicDBObject());
 		JSONObject out = new JSONObject();
 		if (cursor.size() == 0) {
@@ -313,7 +308,6 @@ public class ChatbotApplication implements CommandLineRunner {
 						ind++;
 					}
 					System.out.println("BOT> " + ind++ + ") None of the above");
-					boolean valid = false;
 					//while (!valid) {
 					//	System.out.println("BOT> Select an option.");
 					//String ansLine = in.nextLine();
@@ -487,21 +481,20 @@ public class ChatbotApplication implements CommandLineRunner {
 		ArrayList<entry> entries = new ArrayList<>();
 		DBCursor cursor = collection.find(new BasicDBObject());
 		for (int i = 0; i < cursor.size(); i++) {
-			DBObject currentDoc = cursor.next();
-			String body = (String)currentDoc.get("body");
-			//System.out.println(currentDoc);
-			//id is a composite string, so set up JSON reader to split into the two parts
-			JSONObject obj = new JSONObject(currentDoc.get("_id").toString());
+			String body = (String) cursor.next().get("body");
+			// System.out.println(currentDoc);
+			// id is a composite string, so set up JSON reader to split into the two parts
+			JSONObject obj = new JSONObject(cursor.next().get("_id").toString());
 
-			//create new entry and add to global list of entries
+			// create new entry and add to global list of entries
 			entry ent = new entry();
 			ent.threadid = obj.get("thread_id").toString();
 			ent.subid = (int) obj.get("sub_id");
 			ent.body = body;
-			ent.qa = (String)currentDoc.get("qa");
-			ent.subthreadid = (String)currentDoc.get("subthread");
-			ent.keywords = (ArrayList<String>)currentDoc.get("keywords");
-			ent.date = (String) currentDoc.get("date");
+			ent.qa = (String) cursor.next().get("qa");
+			ent.subthreadid = (String) cursor.next().get("subthread");
+			ent.keywords = (ArrayList<String>) cursor.next().get("keywords");
+			ent.date = (String) cursor.next().get("date");
 			entries.add(ent);
 		}
 		globals.entries = entries;
