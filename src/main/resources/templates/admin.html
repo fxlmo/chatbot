@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css"  rel="stylesheet" />
+    <link href="css/chatbot.css" rel="stylesheet"/>
+    <!-- temp links below while developing -->
+
+    <link href="../static/css/bootstrap.min.css"  rel="stylesheet" />
+    <link href="../static/css/chatbot.css" rel="stylesheet"/>
+
+    <title>Chatbot</title>
+  </head>
+  <body class="text-center">
+    <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand"><a href="/index">
+            Chatbot
+            <img class="images" height="60px" width="60px" src="../static/images/botpic.gif"  th:src="@{/images/botpic.gif}"/>
+            <img class="images" height="70px" width="70px"  src="../static/images/uob.svg"  th:src="@{/images/uob.svg}"/> </a></h3>
+        </div>
+      </header>
+
+      <main role="main" class="inner cover">
+        <!--h1 class="cover-heading">Cover your page.</h1> -->
+        <p class="lead">What would you like to do?</p>
+
+        <!-- <a class="btn btn-info" href="/admin" role="button" method="get" act>View all threads</a> <br></br> -->
+        
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addThreadModal">
+          Add a thread
+        </button>
+        <br></br>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteThreadModal">
+          Delete a thread
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="addThreadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">Specify thread details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="modalform" class="needs-validation text-dark" novalidate>
+                  <div class="form-group">
+                    <label for="ID-input">Thread-ID</label>
+                    <input type="ID" class="form-control" id="ID-input" aria-describedby="emailHelp" placeholder="Enter email" required>
+                    <div class="invalid-feedback">
+                      Please enter a valid thread ID
+                    </div>
+                    
+                  </div>
+                  <div class="form-group">
+                    <label for="subID-input">Subthread-ID</label>
+                    <input type="ID" class="form-control" id="subID-input" aria-describedby="emailHelp" placeholder="Enter subID" required>
+                    <div class="invalid-feedback">
+                      Please enter a valid Subthread-ID
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="Date-input">Date Submitted</label>
+                      <input type="date" class="form-control" id="Date-input" placeholder="..." required>
+                      <div class="invalid-feedback">
+                        Please enter a valid data
+                      </div>
+                    </div>
+                  <div class="form-group">
+                    <label for="Body-input">Body</label>
+                    <textarea type="text" class="form-control" id="Body-input" placeholder="..." required></textarea>
+                    <div class="invalid-feedback">
+                      Please enter a body
+                    </div>
+                  </div>
+
+                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+                      <input type="radio" name="options" id="q" autocomplete="off" checked> Question
+                    </label>
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="options" id="a" autocomplete="off"> Answer
+                    </label>
+                   
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div> <br></br>
+
+        <div class="modal fade" id="deleteThreadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">Select a thread to delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+        <!-- <a class="btn btn-danger" href="/admin" role="button" method="get" act>Delete a thread</a> -->
+        
+        </p>
+      </main>
+
+      <footer class="mastfoot mt-auto">
+        <div class="alert-box success">Success</div>
+        <div class="inner">
+          <p>Copyright &copy; 2020 UoB chatbot team</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Optional JavaScript -->
+    
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    
+    <script src="js/chatbot.js"></script>
+    <!-- Temp link while developing-->
+    <script src="../static/js/chatbot.js"></script>
+    
+  </body>
+</html>
