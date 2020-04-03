@@ -89,6 +89,7 @@ public class ChatbotController {
     public ResponseEntity<JSONresponse> addThreadViaAjax(@RequestBody String thread) throws JSONException {
         // return ResponseEntity.ok(new JSONresponse(new JSONObject()));
         ArrayList<String> response = new ArrayList<>();
+        System.out.println("We got this " + thread);
         response.add("just testing");
         return ResponseEntity.ok(new JSONresponse("test", response));
     }
