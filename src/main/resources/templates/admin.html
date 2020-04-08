@@ -40,7 +40,7 @@
             Add a thread
         </button>
         <br></br>
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteThreadModal">
+        <button type="button" id="btnDelThread" class="btn btn-danger" data-toggle="modal" data-target="#deleteThreadModal">
             Delete a thread
         </button>
 
@@ -110,12 +110,23 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-dark" id="exampleModalLabel">Select a thread to delete</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-
+                        <div class="container">
+                            <div id="select-delete">
+                                <select class="browser-default custom-select" id="dbxDelete" disabled>
+                                    <option value="" disabled selected> Fetching threads... </option>
+                                </select>
+                            </div>
+                            <div id="go-delete">
+                                <button type="button" id="btnGoDelete" class="btn btn-primary" style="width:130%;" disabled>
+                                    <span aria-hidden="false">Go</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

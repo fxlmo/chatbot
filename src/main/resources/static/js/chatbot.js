@@ -194,12 +194,8 @@ $('#addThreadModal').on('hidden.bs.modal', function () {
     $(this).find('form').trigger('reset');
 })
 
-
 //Post request to add a new thread
 function addThreadViaAjax(thread) {
-
-    
-
     $.ajax({
         type : "POST",
         contentType : "application/json",
@@ -209,8 +205,44 @@ function addThreadViaAjax(thread) {
         timeout : 100000,
         success : function(response) {
             console.log(response);
-            
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+        },
+        done : function(e) {
+            console.log("DONE");
+        }
+    });
+}
 
+//DELETE STUFF =====================================
+
+$('#btnDelThread').on('click', function(){
+    console.log("delete button clicked");
+    $('#dbxDelete').empty();
+    $('#btnGoDelete').prop('disabled', true);
+    $('#dbxDelete').prop('disabled',true);
+    $('#dbxDelete').append('<option value="" disabled selected> Fetching threads... </option>');
+    getThreadsViaAjax();
+})
+
+//Populate dropdown list
+function getThreadsViaAjax() {
+    $.ajax({
+        type : "POST",
+        contentType : "application/json",
+        url : "/admin/delete",
+        timeout : 100000,
+        success : function(response) {
+            console.log("RESPONSE FROM GET THREAD (edited) ", response.content);
+            $('#dbxDelete').empty();
+            $('#dbxDelete').prop('disabled',false);
+            $('#dbxDelete').append('<option value="" disabled selected> Choose a thread </option>');
+            i = 0;
+            (response.content).forEach(element => {
+                $('#dbxDelete').append('<option value="' + element + '">' + element + '</option>');
+                i++;
+            });
         },
         error : function(e) {
             console.log("ERROR: ", e);
@@ -221,5 +253,16 @@ function addThreadViaAjax(thread) {
         }
     });
 }
+
+$('#dbxDelete').on('change', function(e){
+    $('#btnGoDelete').prop('disabled', false);
+    console.log("Your selection is in fact -- " + $('#dbxDelete').find("option:selected").val());
+});
+
+function deleteThreadViaAjax(thread) {
+
+}
+
+
 
 

@@ -106,6 +106,15 @@ h3 {
   background: #17D654;
 }
 
+#select-delete {
+  float:left;
+  width:85%;
+}
+
+#go-delete {
+  float:right;
+}
+
 
 @media (min-width: 48em) {
     .masthead-brand {

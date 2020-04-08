@@ -239,7 +239,6 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @param collection
 	 * @throws JSONException
 	 */
-
 	public JSONObject normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection, String questionAsked) throws JSONException {
 		boolean quit = false;
 		boolean admin = false;
@@ -365,8 +364,6 @@ public class ChatbotApplication implements CommandLineRunner {
 			}
 		}
 		//}
-
-		//goto admin interaction (check password goes here)
 
 		return out;
 	}
@@ -539,5 +536,21 @@ public class ChatbotApplication implements CommandLineRunner {
 			keyWords.add((ArrayList<String>) theObj.get("keywords"));
 		}
 		return keyWords;
+	}
+
+	public ArrayList<String> getAllThreads(DBCollection collection) throws JSONException {
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<String> threads = new ArrayList<>();
+		System.out.println(cursorGather.size());
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject obj = cursorGather.next();
+			System.out.println(obj);
+			DBObject id = (DBObject) obj.get("_id");
+			String thread = (String) id.get("thread_id");
+			if (!threads.contains(thread)) {
+				threads.add(thread);
+			}
+		}
+		return threads;
 	}
 }

@@ -55,10 +55,15 @@ public class ChatbotController {
         public String type;
         public ArrayList<String> content;
 
+        public JSONresponse() {
+            this.type = null;
+            this.content = null;
+        }
+
         public JSONresponse(JSONObject s) throws JSONException {
             this.type = (String) s.get("type");
             this.content = new ArrayList<>();
-            if (s.get("type").equals("answer")) {
+            if (s.get("type").equals("answer") || s.get("type").equals("success")) {
                 int i = 0;
                 JSONObject JSONcontent = (JSONObject) s.get("content");
                 while(i < JSONcontent.length()) {
@@ -88,9 +93,20 @@ public class ChatbotController {
         response.put("type","success");
         response.put("content","null");
         return ResponseEntity.ok(new JSONresponse(response));
-
-
     }
 
+    @RequestMapping(value = "/admin/delete", method = RequestMethod.POST)
+    public ResponseEntity<JSONresponse> getThreadAjax() throws JSONException {
 
+        // JSONObject jsonThread = new JSONObject(thread);
+        // System.out.println(jsonThread);
+
+        //app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
+        ArrayList<String> threads = app.getAllThreads(collection);
+
+        JSONresponse jNresponse = new JSONresponse();
+        jNresponse.type = "success";
+        jNresponse.content = threads;
+        return ResponseEntity.ok(jNresponse);
+    }
 }
