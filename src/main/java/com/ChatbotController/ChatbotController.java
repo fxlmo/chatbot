@@ -2,6 +2,7 @@ package com.ChatbotController;
 
 import com.example.chatbot.ChatbotApplication;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,7 +75,18 @@ public class ChatbotController {
                 this.content.add((String) s.get("content"));
             }
         }
+
+        public JSONresponse(String type, ArrayList<String> content) {
+            this.type = type;
+            this.content = content;
+        }
     }
+
+    private class DBresponse {
+        public String type;
+        public ArrayList<DBObject> content;
+    }
+
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String adminPage() {
@@ -85,14 +97,12 @@ public class ChatbotController {
     public ResponseEntity<JSONresponse> addThreadViaAjax(@RequestBody String thread) throws JSONException {
 
         JSONObject jsonThread = new JSONObject(thread);
-        System.out.println(jsonThread);
+        System.out.println("Adding thread " + thread);
 
         //app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
 
-        JSONObject response = new JSONObject();
-        response.put("type","success");
-        response.put("content","null");
-        return ResponseEntity.ok(new JSONresponse(response));
+        JSONresponse response = new JSONresponse();
+        return ResponseEntity.ok(response);
     }
 
     @RequestMapping(value = "/admin/delete", method = RequestMethod.POST)
@@ -105,6 +115,22 @@ public class ChatbotController {
         ArrayList<String> threads = app.getAllThreads(collection);
 
         JSONresponse jNresponse = new JSONresponse();
+        jNresponse.type = "success";
+        jNresponse.content = threads;
+        return ResponseEntity.ok(jNresponse);
+    }
+
+    @RequestMapping(value = "/admin/threads", method = RequestMethod.POST)
+    public ResponseEntity<DBresponse> getSubThreadsAjax(@RequestBody String threadid) throws JSONException {
+
+        // JSONObject jsonThread = new JSONObject(thread);
+        // System.out.println(jsonThread);
+
+        //app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
+		threadid = threadid.substring(1, threadid.length() - 1);
+        ArrayList<DBObject> threads = app.getSubThreads(collection, threadid);
+
+        DBresponse jNresponse = new DBresponse();
         jNresponse.type = "success";
         jNresponse.content = threads;
         return ResponseEntity.ok(jNresponse);

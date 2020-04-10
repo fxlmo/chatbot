@@ -544,7 +544,6 @@ public class ChatbotApplication implements CommandLineRunner {
 		System.out.println(cursorGather.size());
 		for (int i = 0; i < cursorGather.size(); i++) {
 			DBObject obj = cursorGather.next();
-			System.out.println(obj);
 			DBObject id = (DBObject) obj.get("_id");
 			String thread = (String) id.get("thread_id");
 			if (!threads.contains(thread)) {
@@ -552,5 +551,19 @@ public class ChatbotApplication implements CommandLineRunner {
 			}
 		}
 		return threads;
+	}
+
+	public ArrayList<DBObject> getSubThreads(DBCollection collection, String thread_id) throws JSONException {
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<DBObject> subthreads = new ArrayList<>();
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject obj = cursorGather.next();
+			DBObject id = (DBObject) obj.get("_id");
+			String thread = (String) id.get("thread_id");
+			if (thread.equals(thread_id)) {
+				subthreads.add(obj);
+			}
+		}
+		return subthreads;
 	}
 }

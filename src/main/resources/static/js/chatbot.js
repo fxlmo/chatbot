@@ -181,7 +181,6 @@ function searchViaAjax(msg) {
             console.log("got here");
             $('#addThreadModal').modal('hide');
 
-            $( "div.success" ).fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
           }
 
         }, false);
@@ -205,9 +204,14 @@ function addThreadViaAjax(thread) {
         timeout : 100000,
         success : function(response) {
             console.log(response);
+            $( "div.success" ).fadeIn( 300 );
         },
         error : function(e) {
             console.log("ERROR: ", e);
+            $('#dbxDelete').empty();
+            $('#btnGoDelete').prop('disabled', true);
+            $('#dbxDelete').prop('disabled',true);
+            $( "div.danger" ).fadeIn( 300 );
         },
         done : function(e) {
             console.log("DONE");
@@ -215,15 +219,38 @@ function addThreadViaAjax(thread) {
     });
 }
 
+$('#btnDismissSuccess').on('click', function() {
+    $( "div.success" ).fadeOut( 300 );
+})
+$('#btnDismissFail').on('click', function() {
+    $( "div.danger" ).fadeOut( 300 );
+})
+
 //DELETE STUFF =====================================
 
+$('#threadContainer').on('mouseenter', 'div.delThreadContainer', function() {
+    console.log("mouse entered div")
+    this.classList.add('entered');
+    this.classList.remove('left');
+})
+
+$('#threadContainer').on('click', 'div.delThreadContainer', function() {
+    $(this).find(":checkbox").click();
+})
+
+$('#threadContainer').on('mouseleave', 'div.delThreadContainer', function() {
+    this.classList.add('left');
+    this.classList.remove('entered');
+})
+
 $('#btnDelThread').on('click', function(){
-    console.log("delete button clicked");
-    $('#dbxDelete').empty();
-    $('#btnGoDelete').prop('disabled', true);
-    $('#dbxDelete').prop('disabled',true);
-    $('#dbxDelete').append('<option value="" disabled selected> Fetching threads... </option>');
-    getThreadsViaAjax();
+    if ($('#dbxDelete').prop('disabled')) {
+        $('#dbxDelete').empty();
+        $('#btnGoDelete').prop('disabled', true);
+        $('#dbxDelete').prop('disabled',true);
+        $('#dbxDelete').append('<option value="" disabled selected> Fetching threads... </option>');
+        getThreadsViaAjax();
+    }
 })
 
 //Populate dropdown list
@@ -246,6 +273,10 @@ function getThreadsViaAjax() {
         },
         error : function(e) {
             console.log("ERROR: ", e);
+            $('#dbxDelete').empty();
+            $('#btnGoDelete').prop('disabled', true);
+            $('#dbxDelete').prop('disabled',true);
+            $( "div.danger" ).fadeIn( 300 );
 
         },
         done : function(e) {
@@ -254,9 +285,48 @@ function getThreadsViaAjax() {
     });
 }
 
+//Populate dropdown list
+function getSubThreadsViaAjax(thread) {
+    $.ajax({
+        type : "POST",
+        contentType : "application/json",
+        url : "/admin/threads",
+        data : JSON.stringify(thread),
+        dataType: "json",
+        timeout : 100000,
+        success : function(response) {
+            console.log("List of threads: (edited) ", response.content);
+            $('#threadContainer').empty();
+            (response.content).forEach(element => {
+                console.log(element);
+                threadid = element._id;
+                date = element.date;
+                body = element.body;
+                subthreadid = element.subthread
+                qa = element.qa
+                $('#threadContainer').append('<div class="divContainer"> <div class="container delThreadContainer"> <div class="child"> <input type="checkbox" id=' + threadid + '> </div> <div class="child"> <p class="thread text-dark">' + date + " -- " +  subthreadid + '</p> <p class="thread text-dark">' + body + '</p> </div> </div> </div>')
+                // i++;
+            });
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+            $('#dbxDelete').empty();
+            $('#btnGoDelete').prop('disabled', true);
+            $('#dbxDelete').prop('disabled',true);
+            $( "div.danger" ).fadeIn( 300 );
+        },
+        done : function(e) {
+            console.log("DONE");
+        }
+    });
+}
+
 $('#dbxDelete').on('change', function(e){
-    $('#btnGoDelete').prop('disabled', false);
-    console.log("Your selection is in fact -- " + $('#dbxDelete').find("option:selected").val());
+    $('#dbxDelete').prop('disabled', true);
+    thread = $('#dbxDelete').find("option:selected").val();
+    console.log("Your selection is in fact -- " + thread);
+    getSubThreadsViaAjax(thread)
+    $('#dbxDelete').prop('disabled', false);
 });
 
 function deleteThreadViaAjax(thread) {

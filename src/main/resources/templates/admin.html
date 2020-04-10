@@ -118,14 +118,24 @@
                         <div class="container">
                             <div id="select-delete">
                                 <select class="browser-default custom-select" id="dbxDelete" disabled>
-                                    <option value="" disabled selected> Fetching threads... </option>
+                                    <option value="" disabled selected>Fetching threads...</option>
                                 </select>
                             </div>
-                            <div id="go-delete">
-                                <button type="button" id="btnGoDelete" class="btn btn-primary" style="width:130%;" disabled>
-                                    <span aria-hidden="false">Go</span>
-                                </button>
-                            </div>
+                        </div>
+
+                        <div id="threadContainer">
+                            <!-- This is what each element should look like -->
+                            <!-- <div class="divContainer">
+                                <div class="container delThreadContainer"> 
+                                    <div class="child">
+                                        <input type="checkbox" id="dummy">
+                                    </div>
+                                    <div class="child">
+                                        <p class="thread text-dark">DATE -- Subthread id </p>
+                                        <p class="thread text-dark">Body for a bit</p>
+                                    </div>
+                                </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -141,14 +151,29 @@
         </p>
     </main>
 
-    <footer class="mastfoot mt-auto">
-        <div class="alert-box success">Success</div>
+    <footer class="mastfoot mt-auto" id="footer">
         <div class="inner">
             <p>Copyright &copy; 2020 UoB chatbot team</p>
         </div>
     </footer>
-</div>
 
+    <div class="container">
+        <div id="footer">
+            <div>
+            <div class="alert-box success">Success
+                <button id="btnDismissSuccess" type="button" class="ml-2 mb-1 close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="alert-box danger">Cannot connect to server
+                <button id="btnDismissFail" type="button" class="ml-2 mb-1 close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Optional JavaScript -->
 
 

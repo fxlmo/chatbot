@@ -63,6 +63,20 @@ h3 {
   width: 0;
 }
 
+#main {
+  overflow: auto;
+  padding-bottom: 180px;
+  /* must be same height as the footer */
+}
+
+#footer {
+  position: absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  justify-content: center;
+}
+
 .masthead {
     padding-bottom: 1cm;
 }
@@ -96,6 +110,13 @@ h3 {
   display: none;
 }
 
+.danger {
+  color: #0c0101;
+  background-color: #ecbbbb;
+  border-color: #d6e9c6;
+  display: none;
+}
+
 /* .invalid class prevents CSS from automatically applying */
 .invalid input:required:invalid {
   background: #BE4C54;
@@ -106,15 +127,44 @@ h3 {
   background: #17D654;
 }
 
-#select-delete {
+/* #select-delete {
   float:left;
   width:85%;
 }
 
 #go-delete {
   float:right;
+} */
+
+#successToast {
+  background-color: #0fc712;
 }
 
+.thread {
+  color: black;
+  text-align: left;
+  margin:5px;
+}
+
+.child {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 10px;
+}
+
+.entered {
+  transition: background .3s ease-in;
+  background-color: rgb(240, 240, 240);
+}
+
+.left {
+  transition: background .3s ease-in;
+  background-color: rgb(255, 255, 255);
+}
+
+.divContainer {
+  padding: 10px;
+}
 
 @media (min-width: 48em) {
     .masthead-brand {
