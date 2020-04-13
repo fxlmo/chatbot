@@ -154,7 +154,7 @@ h3 {
 
 .entered {
   transition: background .3s ease-in;
-  background-color: rgb(240, 240, 240);
+  background-color: rgba(65, 189, 238, 0.514);
 }
 
 .left {

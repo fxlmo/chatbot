@@ -53,7 +53,6 @@ jQuery(document).ready(function($) {
         //$.get("test", chatBotAnswer(data))
         // Prevent the form from submitting via the browser.
         var msg = document.getElementById("textField").value;
-        console.log(msg);
         var query = document.getElementById("textField").value;
         event.preventDefault();
         sendMessage(query);
@@ -62,7 +61,6 @@ jQuery(document).ready(function($) {
 });
 //posts to controller which then provides response using model
 function searchViaAjax(msg) {
-    console.log("search ajax: " + msg);
     var data = msg;
 
     $.ajax({
@@ -80,7 +78,6 @@ function searchViaAjax(msg) {
             answer - answer found. will return the answers in a JSON object.
             */
             //Setting datatype to json parses the response
-            console.log(response.content[1]);
 
             if (response.type == "answer"){
                 chatBotAnswer("Found these answers:");
@@ -155,16 +152,13 @@ function searchViaAjax(msg) {
             form.classList.add('was-validated');
           if (form.checkValidity() === true) {
             form.classList.remove('was-validated')
-            console.log("got here")
             //thread ID, subthread ID, body with radio buttons for if an entry is either a question or answer
             var ID = document.getElementById("ID-input").value;
             var subID = document.getElementById("subID-input").value;
             var date = document.getElementById("Date-input").value;
             var body = document.getElementById("Body-input").value;
-            console.log("here")
             var qa;
             var q = $('#q input:radio:checked').val();
-            console.log("got")
             if (q){
                 qa = "q";
             } else { qa ="a";}
@@ -173,12 +167,10 @@ function searchViaAjax(msg) {
 
             var threadDetails = {"ID":ID, "SubID":subID, "date":date, "body":body, "qa":qa}
 
-            console.log(threadDetails);
             //combine all variables into Json
 
             addThreadViaAjax(threadDetails)
 
-            console.log("got here");
             $('#addThreadModal').modal('hide');
 
           }
@@ -189,7 +181,6 @@ function searchViaAjax(msg) {
   })();
 
 $('#addThreadModal').on('hidden.bs.modal', function () {
-    console.log("got to reset")
     $(this).find('form').trigger('reset');
 })
 
@@ -229,7 +220,6 @@ $('#btnDismissFail').on('click', function() {
 //DELETE STUFF =====================================
 
 $('#threadContainer').on('mouseenter', 'div.delThreadContainer', function() {
-    console.log("mouse entered div")
     this.classList.add('entered');
     this.classList.remove('left');
 })
@@ -263,6 +253,7 @@ function getThreadsViaAjax() {
         success : function(response) {
             console.log("RESPONSE FROM GET THREAD (edited) ", response.content);
             $('#dbxDelete').empty();
+            $('#threadContainer').empty();
             $('#dbxDelete').prop('disabled',false);
             $('#dbxDelete').append('<option value="" disabled selected> Choose a thread </option>');
             i = 0;
@@ -285,6 +276,7 @@ function getThreadsViaAjax() {
     });
 }
 
+var threads = [];
 //Populate dropdown list
 function getSubThreadsViaAjax(thread) {
     $.ajax({
@@ -297,15 +289,17 @@ function getSubThreadsViaAjax(thread) {
         success : function(response) {
             console.log("List of threads: (edited) ", response.content);
             $('#threadContainer').empty();
+            threads = [];
+            i = 0;
             (response.content).forEach(element => {
-                console.log(element);
-                threadid = element._id;
+                threadid = JSON.stringify(element._id);
                 date = element.date;
                 body = element.body;
                 subthreadid = element.subthread
                 qa = element.qa
-                $('#threadContainer').append('<div class="divContainer"> <div class="container delThreadContainer"> <div class="child"> <input type="checkbox" id=' + threadid + '> </div> <div class="child"> <p class="thread text-dark">' + date + " -- " +  subthreadid + '</p> <p class="thread text-dark">' + body + '</p> </div> </div> </div>')
-                // i++;
+                $('#threadContainer').append('<div class="divContainer"> <div class="container delThreadContainer"> <div class="child"> <input type="checkbox" id="' + i + '"> </div> <div class="child"> <p class="thread text-dark">' + date + " -- " +  subthreadid + '</p> <p class="thread text-dark">' + body + '</p> </div> </div> </div>')
+                threads.push(element._id)
+                i++;
             });
         },
         error : function(e) {
@@ -324,13 +318,49 @@ function getSubThreadsViaAjax(thread) {
 $('#dbxDelete').on('change', function(e){
     $('#dbxDelete').prop('disabled', true);
     thread = $('#dbxDelete').find("option:selected").val();
-    console.log("Your selection is in fact -- " + thread);
     getSubThreadsViaAjax(thread)
     $('#dbxDelete').prop('disabled', false);
 });
 
-function deleteThreadViaAjax(thread) {
+$('#btnDelete').on('click', function() {
+    delThreads = [];
+    $('#threadContainer input:checked').each(function() {
+        id =$(this).attr('id');
+        delThreads.push(threads[id]);
+    })
+    if (delThreads.length > 0) {
+        deleteThreadViaAjax(delThreads);
+    } else {
+        // Handle no checkboxes clicked (feedback)
+        console.log("No checkboxes clicked boss")
+    }
+})
 
+function deleteThreadViaAjax(threads) {
+    $.ajax({
+        type : "DELETE",
+        contentType : "application/json",
+        url : "/admin/delete",
+        data : JSON.stringify(threads),
+        dataType: "json",
+        timeout : 100000,
+        success : function(response) {
+            console.log(response);
+            $('#deleteThreadModal').modal('hide');
+            getThreadsViaAjax();
+            $( "div.success" ).fadeIn( 300 );
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+            $('#dbxDelete').empty();
+            $('#btnGoDelete').prop('disabled', true);
+            $('#dbxDelete').prop('disabled',true);
+            $( "div.danger" ).fadeIn( 300 );
+        },
+        done : function(e) {
+            console.log("DONE");
+        }
+    });
 }
 
 

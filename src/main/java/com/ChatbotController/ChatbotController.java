@@ -1,9 +1,12 @@
 package com.ChatbotController;
 
 import com.example.chatbot.ChatbotApplication;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,5 +137,19 @@ public class ChatbotController {
         jNresponse.type = "success";
         jNresponse.content = threads;
         return ResponseEntity.ok(jNresponse);
+    }
+
+    @RequestMapping(value = "/admin/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<JSONresponse> deleteThreadViaAjax(@RequestBody String threads) throws JSONException {
+
+        JSONArray jsonThreads = new JSONArray(threads);
+        for (int j = 0; j < jsonThreads.length(); j++) {
+            JSONObject object = jsonThreads.getJSONObject(j);
+            // app.adminDelete(collection, object);
+        }
+
+
+        JSONresponse response = new JSONresponse("success", null);
+        return ResponseEntity.ok(response);
     }
 }

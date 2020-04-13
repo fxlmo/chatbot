@@ -566,4 +566,17 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 		return subthreads;
 	}
+
+	/**
+	 * Admin delete -- Delete an entry from a collection
+	 * 
+	 * @param collection -- the collection to delete from
+	 * @param id         id of entry to delete from (form thread_id, sub_id)
+	 * @throws JSONException
+	 */
+	public void adminDelete(DBCollection collection, JSONObject id) throws JSONException {
+		DBObject query = new BasicDBObject("_id", new BasicDBObject("thread_id", id.get("thread_id"))
+				.append("sub_id", id.get("sub_id")));
+		collection.remove(query);
+	}
 }
