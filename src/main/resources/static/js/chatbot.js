@@ -1,4 +1,9 @@
+var context = "none";
+var contextThreads = [];
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function sendMessage(query) {
 
@@ -6,22 +11,62 @@ function sendMessage(query) {
     if (query==="") {return;};
     printMessage(query, "user");
     clearInputField();
-    searchViaAjax(query);
+    if (context == "multi") {
+        // check if query is an integer
+        var check = parseInt(query, 10);
+        console.log(check);
+        if (check <= contextThreads.length) {
+            if (check === contextThreads.length) {
+                chatBotAnswer("Ok. Can I help with anything else?")
+                resetViaAjax();
+            } else {
+                printMessage("thinking", "typing");
+                searchViaAjax(contextThreads[check]);
+            }
+            context = "none";
+            contextThreads = [];
+        } else {
+            console.log("Nah something dodge has gone on here like");
+            chatBotAnswer("Sorry, I didn't quite get that. Try again.")
+        }
+    } else {
+        printMessage("thinking", "typing");
+        searchViaAjax(query);
+    }
 }
 
 //shows message and updates html
 function printMessage(msg, user) {
   var newMsg = document.createElement('DIV');
-     
+    var bubClass; 
     if (user === "user") {
         newMsg.className = 'userMessage';
-
+        bubClass = 'speech-bubble-user';
+    } else if(user === "typing") {
+        newMsg.className = 'typeMessage';
+        bubClass = 'speech-bubble-chatbot';
+        msg = "thinking...";
+    } else if (user === "ans") {
+        newMsg.className = "chatBotMessage";
+        bubClass = 'speech-bubble-answer';
     } else {
-      newMsg.className = 'chatBotMessage';
+
+        bubClass = 'speech-bubble-chatbot';
+        var container = document.getElementById("chatBox");
+        var elements = container.getElementsByClassName("typeMessage");
+
+        while (elements[0]) {
+            elements[0].parentNode.removeChild(elements[0]);
+        }
+        newMsg.className = 'chatBotMessage'; 
     }
     
-  newMsg.appendChild(document.createTextNode(msg));
-  document.getElementById("chatText").appendChild(newMsg);
+    var child = document.createElement('p');
+    child.className = bubClass;
+    child.appendChild(document.createTextNode(msg));
+    newMsg.appendChild(child);
+    document.getElementById("chatText").appendChild(newMsg);
+    gotoBottom();
 }
 
 //clears text box
@@ -45,7 +90,18 @@ function chatBotAnswer(msg) {
     gotoBottom();
 }
 
-
+function chatBotReturnedAnswer(msg) {
+    var chatBotAnswer = msg;
+    printMessage(chatBotAnswer, "ans");
+    gotoBottom();
+}
+//Greet user
+$(window).on('load',function () {
+    context = "none";
+    contextThreads = [];
+    resetViaAjax();
+    chatBotAnswer("Hi! What would you like to know?");
+})
 
 //when user asks something these two functions below are invoked
 jQuery(document).ready(function($) {
@@ -56,7 +112,6 @@ jQuery(document).ready(function($) {
         var query = document.getElementById("textField").value;
         event.preventDefault();
         sendMessage(query);
-
     });
 });
 //posts to controller which then provides response using model
@@ -82,10 +137,23 @@ function searchViaAjax(msg) {
             if (response.type == "answer"){
                 chatBotAnswer("Found these answers:");
                 (response.content).forEach(element => {
-                    chatBotAnswer(element);
+                    chatBotReturnedAnswer(element);
                 });
+                chatBotAnswer("Do you need to know anything else?");
+            } else if (response.type == "answers") {
+                context = "multi";
+                chatBotAnswer("I found information in these threads! Type the number that matches your desired thread:");
+                var ind = 0;
+                (response.content).forEach( element => {
+                    chatBotAnswer(ind +") " +  element);
+                    contextThreads.push(element);
+                    ind++;
+                })
+                console.log("Threads = ", contextThreads);
+                chatBotAnswer(ind + ") None of the above");
             } else if (response.type == "error" || response.type == "no-answer" ){
                 chatBotAnswer("I could not find anything");
+                chatBotAnswer("Can I help with anything else?");
             }
 
 
@@ -103,6 +171,26 @@ function searchViaAjax(msg) {
     });
 }
 
+function resetViaAjax() {
+
+    $.ajax({
+        type : "POST",
+        contentType : "application/json",
+        url : "/index/reset",
+        dataType: "json",
+        timeout : 100000,
+        success : function(response) {
+            console.log("Reset all contexts");
+        },
+        error : function(e) {
+            console.log("ERROR: ", e);
+            
+        },
+        done : function(e) {
+            console.log("DONE");
+        }
+    });
+}
 /*//when add button is pressed this function in invoked
     $("#addThreadSubmit").click(function(event) {
         console.log("got here")
@@ -158,11 +246,13 @@ function searchViaAjax(msg) {
             var date = document.getElementById("Date-input").value;
             var body = document.getElementById("Body-input").value;
             var qa;
-            var q = $('#q input:radio:checked').val();
-            if (q){
+            var q = $('#qa input:radio:checked').val();
+            console.log(q, q == 'on');
+            if (q == 'on'){
                 qa = "q";
             } else { qa ="a";}
 
+            console.log(qa);
             event.preventDefault();
 
             var threadDetails = {"ID":ID, "SubID":subID, "date":date, "body":body, "qa":qa}
@@ -297,7 +387,12 @@ function getSubThreadsViaAjax(thread) {
                 body = element.body;
                 subthreadid = element.subthread
                 qa = element.qa
-                $('#threadContainer').append('<div class="divContainer"> <div class="container delThreadContainer"> <div class="child"> <input type="checkbox" id="' + i + '"> </div> <div class="child"> <p class="thread text-dark">' + date + " -- " +  subthreadid + '</p> <p class="thread text-dark">' + body + '</p> </div> </div> </div>')
+                if (qa == 'q') {
+                    qa = "Question";
+                } else {
+                    qa = "Answer";
+                }
+                $('#threadContainer').append('<div class="divContainer"> <div class="container delThreadContainer"> <div class="child"> <input type="checkbox" id="' + i + '"> </div> <div class="child"> <p class="thread text-dark">' + date + " -- " +  subthreadid + " -- " + qa + '</p> <p class="thread text-dark">' + body + '</p> </div> </div> </div>')
                 threads.push(element._id)
                 i++;
             });

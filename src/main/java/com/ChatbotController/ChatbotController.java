@@ -34,6 +34,12 @@ public class ChatbotController {
         return "index";
     }
 
+    @RequestMapping(value = "/index/reset", method = RequestMethod.POST)
+    public ResponseEntity<JSONresponse> resetViaAjax() {
+        app.resetAll();
+        return ResponseEntity.ok(new JSONresponse());
+    }
+
 
 
     @RequestMapping(value = "/index", method = RequestMethod.POST)
@@ -67,7 +73,7 @@ public class ChatbotController {
         public JSONresponse(JSONObject s) throws JSONException {
             this.type = (String) s.get("type");
             this.content = new ArrayList<>();
-            if (s.get("type").equals("answer") || s.get("type").equals("success")) {
+            if (s.get("type").equals("answer") || s.get("type").equals("success") || s.get("type").equals("answers")) {
                 int i = 0;
                 JSONObject JSONcontent = (JSONObject) s.get("content");
                 while(i < JSONcontent.length()) {
@@ -102,7 +108,7 @@ public class ChatbotController {
         JSONObject jsonThread = new JSONObject(thread);
         System.out.println("Adding thread " + thread);
 
-        //app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
+        app.adminAdd(collection, documents, jsonThread.getString("ID"), jsonThread.getString("SubID"), jsonThread.getString("body"), jsonThread.getString("date"), jsonThread.getString("qa") .toLowerCase());
 
         JSONresponse response = new JSONresponse();
         return ResponseEntity.ok(response);
@@ -143,10 +149,12 @@ public class ChatbotController {
     public ResponseEntity<JSONresponse> deleteThreadViaAjax(@RequestBody String threads) throws JSONException {
 
         JSONArray jsonThreads = new JSONArray(threads);
+        JSONObject testobj = jsonThreads.getJSONObject(0);
         for (int j = 0; j < jsonThreads.length(); j++) {
             JSONObject object = jsonThreads.getJSONObject(j);
-            // app.adminDelete(collection, object);
+            app.adminDelete(collection, object);
         }
+        app.updateSubIds(collection, testobj);
 
 
         JSONresponse response = new JSONresponse("success", null);

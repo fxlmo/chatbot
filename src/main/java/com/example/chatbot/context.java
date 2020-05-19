@@ -5,7 +5,8 @@ package com.example.chatbot;
  */
 public enum context {
     none,
+    multi,
     admin_else,
     user_else,
-    list,
+    list
 }

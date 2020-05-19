@@ -105,6 +105,11 @@ public class ChatbotApplication implements CommandLineRunner {
 		//normalIO(documents, globals.collection);
 	}
 
+	public ArrayList<String> removeStopWords(ArrayList<String> document) {
+		document.removeIf(d -> globals.stoplist.contains(d));
+		return document;
+	}
+
 	/**
 	 * Get list of keyword from a given document
 	 * @param documents		Document to calculate
@@ -170,15 +175,25 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @return
 	 */
 	public void adminAdd(DBCollection collection, ArrayList<ArrayList<String>> documents, String receivedThreadId, String receivedSubId, String receivedBody, String receivedDate, String receivedQA) throws JSONException {
-		boolean quit = false;
 		System.out.println("BOT> Welcome admin user! What do you want to do?");
 		globals.context = none;
 
 		//converts body of thread to lowercase and removes all punctuation
 		ArrayList<String> convBody = convDoc(receivedBody.split(" "));
 		ArrayList<String> keyWords = getKeyWords(documents, convBody, globals.averageTF);
-		int subid = getThreadSize(collection, receivedThreadId);
+		int subid = 0;
+		boolean end = false;
 
+		for (DBObject t : getSubThreads(collection, receivedThreadId)) {
+			DBObject id = (DBObject) t.get("_id");
+			System.out.println("FOUND THIS SUB ID");
+			System.out.println(id.get("sub_id"));
+			if ((int) id.get("sub_id") == subid && !end) {
+				subid++;
+			} else {
+				end = true;
+			}
+		}
 		//create container for new entry
 		DBObject newEntry = new BasicDBObject("_id", new BasicDBObject("thread_id", receivedThreadId)
 				.append("sub_id", subid))
@@ -234,14 +249,43 @@ public class ChatbotApplication implements CommandLineRunner {
 	}
 
 	/**
+	 * Shows the percentage match of a word with another word in order
+	 * @param word1 First word
+	 * @param word2 Second word
+	 * @return Percentage match 0.0-1.0
+	 */
+	public float fuzzyMatch(String word1, String word2) {
+		System.out.println(word1 + " // " + word2);
+		ArrayList<String> bigram1 = bigram(word1);
+		ArrayList<String> bigram2 = bigram(word2);
+		System.out.println(bigram1);
+		System.out.println(bigram2);
+		float total = bigram1.size() + bigram2.size();
+		bigram1.retainAll(bigram2);
+		System.out.println(bigram1);
+		float out = (bigram1.size()*2)/total;
+		System.out.println(out);
+		return out;
+	}
+
+	public ArrayList<String> bigram(String input) {
+		ArrayList<String> bigram = new ArrayList<String>();
+		for (int i = 0; i < input.length() - 1; i++) {
+			String chars = "";
+			chars = chars + input.charAt(i);
+			chars = chars + input.charAt(i+1);
+			bigram.add(chars);
+		}
+		return bigram;
+	}
+
+	/**
 	 * Normal user interaction
 	 * @param documents
 	 * @param collection
 	 * @throws JSONException
 	 */
 	public JSONObject normalIO(ArrayList<ArrayList<String>> documents, DBCollection collection, String questionAsked) throws JSONException {
-		boolean quit = false;
-		boolean admin = false;
 
 		DBCursor cursor = collection.find(new BasicDBObject());
 		JSONObject out = new JSONObject();
@@ -261,13 +305,31 @@ public class ChatbotApplication implements CommandLineRunner {
 		questionAsked = questionAsked.substring(1, questionAsked.length() - 1);
 		System.out.println("Question received: " + questionAsked);
 		String[] sList = questionAsked.split(" ");
-		if (questionAsked.equals("admin")) {
-			out.put("type","test");
-			out.put("content","admin");
+		if (globals.context == multi) {
+			ArrayList<String> answers = new ArrayList<>();
+			answers = getAnswers(collection, questionAsked);
+			if (answers.size() > 0) {
+				int ansIndex = 1;
+				System.out.println("BOT> I found these answers:");
+				out.put("type","answer");
+				JSONObject jsonAnswer = new JSONObject();
+				int i = 0;
+				for (String ans : answers) {
+					jsonAnswer.put(String.valueOf(i), ans);
+					i++;
+				}
+				out.put("content",jsonAnswer);
+				for (String a : answers) {
+					System.out.println("BOT> Answer " + ansIndex + " -- " + a);
+					ansIndex++;
+				}
+			} else {
+				out.put("type","no-answer");
+				out.put("content","");
+			}
+			globals.context = none;
 			return out;
-		} else if (questionAsked.toLowerCase().equals("help") || questionAsked.toLowerCase().equals("?")) {
-			System.out.println("BOT> Ask me a question or type admin to enter admin mode!");
-		} else {
+		}
 			ArrayList<String> newDocument = new ArrayList<>();
 			for (String word : sList) {
 				newDocument.add(word.replaceAll("[^a-zA-Z0-9]", ""));
@@ -275,7 +337,7 @@ public class ChatbotApplication implements CommandLineRunner {
 			ArrayList<String> wordList = new ArrayList<>(newDocument);
 			documents.add(new ArrayList<>(wordList));
 			ArrayList<String> keyWords = new ArrayList<>();
-			keyWords = getKeyWords(documents,newDocument, globals.averageTF);
+			keyWords = removeStopWords(newDocument);
 			System.out.println("Keywords of query: " + keyWords);
 			int index = 0;
 			int threshold = (int) (newDocument.size()*0.05);
@@ -288,6 +350,17 @@ public class ChatbotApplication implements CommandLineRunner {
 				for (String w : keyWords) {
 					if (keyWordsi.contains(w.toLowerCase())) {
 						matching++;
+					} else {
+						boolean match = false;
+						for (String kw : keyWordsi) {
+							float fzMatch = fuzzyMatch(w.toLowerCase(), kw);
+							if (fzMatch > 0.75) {
+								match = true;
+							}
+						}
+						if (match) {
+							matching++;
+						}
 					}
 				}
 				if (matching > threshold && !foundThreads.contains(globals.entries.get(index).threadid)) {
@@ -307,12 +380,17 @@ public class ChatbotApplication implements CommandLineRunner {
 					//Bot finds 2 matches
 					System.out.println("BOT> I found some information in these threads!");
 					int ind = 0;
+					JSONObject returnedAnswers = new JSONObject();
 					for (int i : indices) {
 						System.out.println(ind + ") " + globals.entries.get(i).threadid);
+						returnedAnswers.put(String.valueOf(ind), globals.entries.get(i).threadid);
 						ind++;
 					}
+					globals.context = multi;
 					System.out.println("BOT> " + ind++ + ") None of the above");
-					boolean valid = false;
+					out.put("type", "answers");
+					out.put("content", returnedAnswers);
+					return out;
 					//while (!valid) {
 					//	System.out.println("BOT> Select an option.");
 					//String ansLine = in.nextLine();
@@ -337,7 +415,6 @@ public class ChatbotApplication implements CommandLineRunner {
 					int ansIndex = 1;
 					System.out.println("BOT> I found these answers:");
 					out.put("type","answer");
-					// TODO serialise answers
 					JSONObject jsonAnswer = new JSONObject();
 					int i = 0;
 					for (String ans : answers) {
@@ -356,13 +433,11 @@ public class ChatbotApplication implements CommandLineRunner {
 					out.put("content","unanswered");
 				}
 				System.out.println("BOT> Can I help with anything else?");
-				globals.context = user_else;
 			} else {
 				System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
 				out.put("type","no-answer");
 				out.put("content","");
 			}
-		}
 		//}
 
 		return out;
@@ -420,14 +495,9 @@ public class ChatbotApplication implements CommandLineRunner {
 
 			ArrayList<String> keywords = getKeyWords(documents, document, globals.averageTF);
 			if(!theObj.get("keywords").equals(keywords)) {
-				DBObject newEntry = new BasicDBObject("_id", theObj.get("_id"))
-						.append("subthread", theObj.get("subthread"))
-						.append("date", theObj.get("date"))
-						.append("body", theObj.get("body"))
-						.append("qa", theObj.get("qa"))
-						.append("keywords", keywords);
-				collection.remove(new BasicDBObject(new BasicDBObject("_id",theObj.get("_id"))));
-				collection.insert(newEntry);
+				DBObject query = (DBObject) theObj.get("_id");
+				DBObject update = new BasicDBObject("$set", new BasicDBObject("keywords", keywords));
+				collection.update(query, update);
 			}
 		}
 		getEntries(collection);
@@ -578,5 +648,22 @@ public class ChatbotApplication implements CommandLineRunner {
 		DBObject query = new BasicDBObject("_id", new BasicDBObject("thread_id", id.get("thread_id"))
 				.append("sub_id", id.get("sub_id")));
 		collection.remove(query);
+	}
+
+	public void updateSubIds(DBCollection collection, JSONObject id) throws JSONException {
+		ArrayList<DBObject> objs = getSubThreads(collection, (String) id.get("thread_id"));
+		DBCursor cursorGather = collection.find(new BasicDBObject());
+		ArrayList<DBObject> subthreads = new ArrayList<>();
+		for (int i = 0; i < cursorGather.size(); i++) {
+			DBObject obj = cursorGather.next();
+			String thread = (String) id.get("thread_id");
+			DBObject query = new BasicDBObject("_id.thread_id", obj.get("thread_id"));
+			DBObject update = new BasicDBObject().append("$set", new BasicDBObject().append("_id.sub_id", i));
+			collection.update(query, update);
+		}
+	}
+
+	public void resetAll() {
+		globals.context = none;
 	}
 }
