@@ -459,5 +459,17 @@ function deleteThreadViaAjax(threads) {
 }
 
 
+$('#btnAddThread').on('click', function() {
+    console.log("worked")
+})
+//$('#addThreadModal').bind('load', function() { alert($('#addThreadModal1').hasClass('modal fade show')); });
 
+
+$('#addThreadModal').on('shown.bs.modal', function () {
+    var class1 = $(this).attr("class");
+    if(class1 == "modal fade xshow"){
+        console.log("done")
+    }
+    
+})
 

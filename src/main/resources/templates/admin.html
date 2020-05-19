@@ -15,6 +15,8 @@
 
     <link href="../static/css/bootstrap.min.css"  rel="stylesheet" />
     <link href="../static/css/chatbot.css" rel="stylesheet"/>
+    <link href="src/static/css/chatbot.css" rel="stylesheet"/>
+    <link href="src/static/css/bootstrap.min.css" rel="stylesheet"/>
 
     <title>Chatbot</title>
 </head>
@@ -36,7 +38,7 @@
         <!-- <a class="btn btn-info" href="/admin" role="button" method="get" act>View all threads</a> <br></br> -->
 
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addThreadModal">
+        <button type="button" id="btnAddThread" class="btn btn-success" data-toggle="modal" data-target="#addThreadModal">
             Add a thread
         </button>
         <br></br>
@@ -54,11 +56,11 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" id="addThreadModal1">
                         <form id="modalform" class="needs-validation text-dark" novalidate>
                             <div class="form-group">
                                 <label for="ID-input">Thread-ID</label>
-                                <input type="ID" class="form-control" id="ID-input" aria-describedby="emailHelp" placeholder="Enter email" required>
+                                <input type="ID" class="form-control" id="ID-input" aria-describedby="emailHelp" placeholder="Enter ID" required>
                                 <div class="invalid-feedback">
                                     Please enter a valid thread ID
                                 </div>
@@ -196,6 +198,9 @@
 <script src="js/chatbot.js"></script>
 <!-- Temp link while developing-->
 <script src="../static/js/chatbot.js"></script>
+<script src="src/static/js/chatbot.js"></script>
+
+
 
 </body>
 </html>
