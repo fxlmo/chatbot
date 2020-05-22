@@ -1,6 +1,5 @@
 package com.example.chatbot;
 
-
 import com.ChatbotController.ChatbotController;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
@@ -17,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static com.example.chatbot.context.*;
 
@@ -106,7 +106,7 @@ public class ChatbotApplication implements CommandLineRunner {
 	}
 
 	public ArrayList<String> removeStopWords(ArrayList<String> document) {
-		document.removeIf(d -> globals.stoplist.contains(d));
+		document.removeIf(d -> globals.stoplist.contains(d.toLowerCase()));
 		return document;
 	}
 
@@ -175,7 +175,6 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @return
 	 */
 	public void adminAdd(DBCollection collection, ArrayList<ArrayList<String>> documents, String receivedThreadId, String receivedSubId, String receivedBody, String receivedDate, String receivedQA) throws JSONException {
-		System.out.println("BOT> Welcome admin user! What do you want to do?");
 		globals.context = none;
 
 		//converts body of thread to lowercase and removes all punctuation
@@ -186,8 +185,6 @@ public class ChatbotApplication implements CommandLineRunner {
 
 		for (DBObject t : getSubThreads(collection, receivedThreadId)) {
 			DBObject id = (DBObject) t.get("_id");
-			System.out.println("FOUND THIS SUB ID");
-			System.out.println(id.get("sub_id"));
 			if ((int) id.get("sub_id") == subid && !end) {
 				subid++;
 			} else {
@@ -211,36 +208,18 @@ public class ChatbotApplication implements CommandLineRunner {
 		globals.entries.add(ent.add(receivedThreadId, receivedSubId, subid, receivedDate, receivedQA, keyWords, receivedBody));
 		updateKeywords(collection);
 		getEntries(collection);
-		System.out.println("BOT> Inserted new value! Do you want to do anything else?");
 		globals.context = admin_else;
-		//} else if (s.equalsIgnoreCase("remove all")) {
-		//	//add confirmation
-		//	DBCursor cursor = collection.find(new BasicDBObject());
-		//	for (int i = 0; i <= cursor.size(); i++) {
-		//		collection.remove(cursor.next());
-		//	}
-		//	System.out.println("BOT> Removed all entries. Can I help with anything else?");
-		//	globals.context = admin_else;
-		//}
 	}
 
 	public JSONObject adminList(ArrayList<ArrayList<String>> documents, DBCollection collection, String requestedID) throws JSONException {
 		JSONObject out = new JSONObject();
 		if (requestedID.equalsIgnoreCase("")) {
 			ArrayList<entry> entries = new ArrayList<>();
-			for (entry ent : globals.entries) {
-				System.out.println("===================");
-				System.out.println(ent);
-
-			}
 			out.put("type", "found");
 			out.put("content", entries);
-			System.out.println("===================");
-			System.out.println("BOT> Can I help with anything else?");
 			globals.context = admin_else;
 		} else {
 			//look for thread
-			System.out.println("BOT> Couldn't find this thread id. Try again, or type quit to cancel");
 			out.put("context", "list");
 			out.put("type", "not-found");
 			out.put("content", "null");
@@ -255,19 +234,17 @@ public class ChatbotApplication implements CommandLineRunner {
 	 * @return Percentage match 0.0-1.0
 	 */
 	public float fuzzyMatch(String word1, String word2) {
-		System.out.println(word1 + " // " + word2);
 		ArrayList<String> bigram1 = bigram(word1);
 		ArrayList<String> bigram2 = bigram(word2);
-		System.out.println(bigram1);
-		System.out.println(bigram2);
 		float total = bigram1.size() + bigram2.size();
 		bigram1.retainAll(bigram2);
-		System.out.println(bigram1);
 		float out = (bigram1.size()*2)/total;
-		System.out.println(out);
 		return out;
 	}
 
+	/**
+	 * Return the bigram of a word (each of the two character possibilities in a word, eg in 'bigram' = 'bi' 'ig' 'gr' 'ra' 'am')
+	 */
 	public ArrayList<String> bigram(String input) {
 		ArrayList<String> bigram = new ArrayList<String>();
 		for (int i = 0; i < input.length() - 1; i++) {
@@ -291,26 +268,21 @@ public class ChatbotApplication implements CommandLineRunner {
 		JSONObject out = new JSONObject();
 		if (cursor.size() == 0) {
 			//if the database is empty on start, enable admin mode to add some records (this should never really run in theory)
-			//System.out.println("BOT> Database is empty, enabling admin mode");
 			out.put("type","error");
 			out.put("content","empty");
-			//quit = true;
-			//admin = true;
 		} else {
 			getEntries(collection);
-			//System.out.println("BOT> Hi, how can I help?");
 		}
 		//check input and match to given string
-		//while (!quit) {
 		questionAsked = questionAsked.substring(1, questionAsked.length() - 1);
 		System.out.println("Question received: " + questionAsked);
 		String[] sList = questionAsked.split(" ");
 		if (globals.context == multi) {
+			// If the user has entered a query that matched multiple threads before, go here
 			ArrayList<String> answers = new ArrayList<>();
 			answers = getAnswers(collection, questionAsked);
 			if (answers.size() > 0) {
 				int ansIndex = 1;
-				System.out.println("BOT> I found these answers:");
 				out.put("type","answer");
 				JSONObject jsonAnswer = new JSONObject();
 				int i = 0;
@@ -320,7 +292,6 @@ public class ChatbotApplication implements CommandLineRunner {
 				}
 				out.put("content",jsonAnswer);
 				for (String a : answers) {
-					System.out.println("BOT> Answer " + ansIndex + " -- " + a);
 					ansIndex++;
 				}
 			} else {
@@ -330,114 +301,99 @@ public class ChatbotApplication implements CommandLineRunner {
 			globals.context = none;
 			return out;
 		}
-			ArrayList<String> newDocument = new ArrayList<>();
-			for (String word : sList) {
-				newDocument.add(word.replaceAll("[^a-zA-Z0-9]", ""));
-			}
-			ArrayList<String> wordList = new ArrayList<>(newDocument);
-			documents.add(new ArrayList<>(wordList));
-			ArrayList<String> keyWords = new ArrayList<>();
-			keyWords = removeStopWords(newDocument);
-			System.out.println("Keywords of query: " + keyWords);
-			int index = 0;
-			int threshold = (int) (newDocument.size()*0.05);
-			ArrayList<String> foundThreads = new ArrayList<>();
-			ArrayList<Integer> indices = new ArrayList<>();
-			globals.keyList = getAllKeyWords(collection, documents);
+		ArrayList<String> newDocument = new ArrayList<>();
+		for (String word : sList) {
+			newDocument.add(word.replaceAll("[^a-zA-Z0-9]", ""));
+		}
+		ArrayList<String> wordList = new ArrayList<>(newDocument);
+		documents.add(new ArrayList<>(wordList));
+		ArrayList<String> keyWords = new ArrayList<>();
+		// Instead of decompose into keywords, just remove stopwords and query the data with that; the tfidf would
+		// get rid of too many of the query words
+		keyWords = removeStopWords(newDocument);
+		keyWords = new ArrayList<>(new HashSet<>(keyWords));
+		keyWords = convDoc(keyWords);
+		System.out.println("Keywords of query: " + keyWords);
+		int index = 0;
+		int threshold = (int) (keyWords.size()*0.5);
+		if (keyWords.size() < 2) {
+			threshold = 1;
+		}
+		ArrayList<String> foundThreads = new ArrayList<>();
+		ArrayList<Integer> indices = new ArrayList<>();
+		globals.keyList = getAllKeyWords(collection, documents);
 
-			for (ArrayList<String> keyWordsi : globals.keyList) {
-				int matching = 0;
-				for (String w : keyWords) {
-					if (keyWordsi.contains(w.toLowerCase())) {
+		//look for matching keywords
+		for (ArrayList<String> keyWordsi : globals.keyList) {
+			int matching = 0;
+			for (String w : keyWords) {
+				if (keyWordsi.contains(w)) {
+					matching++;
+				} else {
+					// if no match is found, look at the matches of the 'bigrams' of the each keywords
+					boolean match = false;
+					for (String kw : keyWordsi) {
+						float fzMatch = fuzzyMatch(w.toLowerCase(), kw);
+						if (fzMatch > 0.75) {
+							match = true;
+						}
+					}
+					if (match) {
 						matching++;
-					} else {
-						boolean match = false;
-						for (String kw : keyWordsi) {
-							float fzMatch = fuzzyMatch(w.toLowerCase(), kw);
-							if (fzMatch > 0.75) {
-								match = true;
-							}
-						}
-						if (match) {
-							matching++;
-						}
 					}
 				}
-				if (matching > threshold && !foundThreads.contains(globals.entries.get(index).threadid)) {
-					indices.add(index);
-					foundThreads.add(globals.entries.get(index).threadid);
-				}
-				index++;
 			}
-			if (indices.size() > 0) {
-				ArrayList<String> answers = new ArrayList<>();
-				String threadid = "";
-				if (indices.size() == 1) {
-					//Bot only found 1 match
-					threadid = globals.entries.get(indices.get(0)).threadid;
-					answers = getAnswers(collection, threadid);
-				} else {
-					//Bot finds 2 matches
-					System.out.println("BOT> I found some information in these threads!");
-					int ind = 0;
-					JSONObject returnedAnswers = new JSONObject();
-					for (int i : indices) {
-						System.out.println(ind + ") " + globals.entries.get(i).threadid);
-						returnedAnswers.put(String.valueOf(ind), globals.entries.get(i).threadid);
-						ind++;
-					}
-					globals.context = multi;
-					System.out.println("BOT> " + ind++ + ") None of the above");
-					out.put("type", "answers");
-					out.put("content", returnedAnswers);
-					return out;
-					//while (!valid) {
-					//	System.out.println("BOT> Select an option.");
-					//String ansLine = in.nextLine();
-					//Integer selectAns = toInt(ansLine);
-					//if (selectAns > ind && selectAns >= 0) {
-					//	System.out.println("BOT> Choose one of the options provided");
-					//} else {
-					//	valid = true;
-					//	if (selectAns == ind) {
-					//		System.out.println("BOT> Ok, consider opening a new thread on Blackboard.");
-					//		System.out.println("BOT> Can I help with anything else?");
-					//		globals.context = user_else;
-					//	} else {
-					//		Integer docIndex = indices.get(selectAns);
-					//		threadid = globals.entries.get(docIndex).threadid;
-					//		answers = getAnswers(collection,threadid);
-					//	}
-					//	}
-					//}
-				}
-				if (answers.size() > 0) {
-					int ansIndex = 1;
-					System.out.println("BOT> I found these answers:");
-					out.put("type","answer");
-					JSONObject jsonAnswer = new JSONObject();
-					int i = 0;
-					for (String ans : answers) {
-						jsonAnswer.put(String.valueOf(i), ans);
-						i++;
-					}
-					out.put("content",jsonAnswer);
-					for (String a : answers) {
-						System.out.println("BOT> Answer " + ansIndex + " -- " + a);
-						ansIndex++;
-					}
-					System.out.println("BOT> For more information, check the '" + threadid + "' thread");
-				} else {
-					System.out.println("BOT> I can't find an answer for this question because it hasn't been answered yet.");
-					out.put("type","error");
-					out.put("content","unanswered");
-				}
-				System.out.println("BOT> Can I help with anything else?");
+			// If matches are above a certain threshold, then return the thread
+			System.out.println(matching + " // " + threshold);
+			if (matching > threshold && !foundThreads.contains(globals.entries.get(index).threadid)) {
+				indices.add(index);
+				foundThreads.add(globals.entries.get(index).threadid);
+			}
+			index++;
+		}
+		if (indices.size() > 0) {
+			ArrayList<String> answers = new ArrayList<>();
+			String threadid = "";
+			if (indices.size() == 1) {
+				//Bot finds one match
+				threadid = globals.entries.get(indices.get(0)).threadid;
+				answers = getAnswers(collection, threadid);
 			} else {
-				System.out.println("BOT> Sorry, I don't have any information on that. Do you want to try again?");
-				out.put("type","no-answer");
-				out.put("content","");
+				//Bot finds 2 or more matches
+				int ind = 0;
+				JSONObject returnedAnswers = new JSONObject();
+				for (int i : indices) {
+					returnedAnswers.put(String.valueOf(ind), globals.entries.get(i).threadid);
+					ind++;
+				}
+				globals.context = multi;
+				out.put("type", "answers");
+				out.put("content", returnedAnswers);
+				return out;
 			}
+			if (answers.size() > 0) {
+				// If there are answers in the thread:
+				int ansIndex = 1;
+				out.put("type","answer");
+				JSONObject jsonAnswer = new JSONObject();
+				int i = 0;
+				for (String ans : answers) {
+					jsonAnswer.put(String.valueOf(i), ans);
+					i++;
+				}
+				out.put("content",jsonAnswer);
+				for (String a : answers) {
+					ansIndex++;
+				}
+			} else {
+				// If no answers in thread flag error
+				out.put("type","error");
+				out.put("content","unanswered");
+			}
+		} else {
+			out.put("type","no-answer");
+			out.put("content","");
+		}
 		//}
 
 		return out;
@@ -473,15 +429,16 @@ public class ChatbotApplication implements CommandLineRunner {
 		return answers;
 	}
 
-	//TODO optimise?? also fix
+	/**
+	 * Update all keywords in the database
+	 * @param collection	The collection (database)
+	 */
 	public void updateKeywords(DBCollection collection) throws JSONException {
-		System.out.println("Updating keywords");
 		DBCursor cursorGather = collection.find(new BasicDBObject());
 		ArrayList<ArrayList<String>> documents = new ArrayList<>();
 		for (int i = 0; i < cursorGather.size(); i++) {
 			DBObject theObj = cursorGather.next();
 			String word = (String) theObj.get("body");
-			//System.out.println(theObj.get("_id"));
 			String[] wList = word.trim().split(" ");
 			ArrayList<String> convBody = convDoc(wList);
 			documents.add(convBody);
@@ -528,6 +485,10 @@ public class ChatbotApplication implements CommandLineRunner {
 		}
 	}
 
+	/**
+	 * Convert document (list of words) to lower case and remove punctuation and numbers
+	 * @param document	document to convert
+	 */
 	public ArrayList<String> convDoc(ArrayList<String> document) {
 		ArrayList<String> convBody = new ArrayList<>();
 		for (String w: document) {
@@ -544,8 +505,11 @@ public class ChatbotApplication implements CommandLineRunner {
 		return convBody;
 	}
 
+	/**
+	 * Get all entries from a given collection (possibly not used)
+	 */
 	public ArrayList<entry> getEntries(DBCollection collection) throws JSONException {
-	    //clear entries to readd from mongo
+	    //clear entries to read from mongo
 		if(globals.entries != null) {
 			globals.entries.clear();
 		} else {
@@ -556,7 +520,6 @@ public class ChatbotApplication implements CommandLineRunner {
 		for (int i = 0; i < cursor.size(); i++) {
 			DBObject currentDoc = cursor.next();
 			String body = (String)currentDoc.get("body");
-			//System.out.println(currentDoc);
 			//id is a composite string, so set up JSON reader to split into the two parts
 			JSONObject obj = new JSONObject(currentDoc.get("_id").toString());
 
@@ -589,7 +552,6 @@ public class ChatbotApplication implements CommandLineRunner {
 		for (int i = 0; i < cursorGather.size(); i++) {
 			DBObject theObj = cursorGather.next();
 			String word = (String) theObj.get("body");
-			//System.out.println(theObj.get("_id"));
 			String[] wList = word.trim().split(" ");
 			ArrayList<String> convBody = convDoc(wList);
 			documents.add(convBody);
@@ -608,10 +570,12 @@ public class ChatbotApplication implements CommandLineRunner {
 		return keyWords;
 	}
 
+	/**
+	 * Get a list of all threads in the database
+	 */
 	public ArrayList<String> getAllThreads(DBCollection collection) throws JSONException {
 		DBCursor cursorGather = collection.find(new BasicDBObject());
 		ArrayList<String> threads = new ArrayList<>();
-		System.out.println(cursorGather.size());
 		for (int i = 0; i < cursorGather.size(); i++) {
 			DBObject obj = cursorGather.next();
 			DBObject id = (DBObject) obj.get("_id");
@@ -650,19 +614,10 @@ public class ChatbotApplication implements CommandLineRunner {
 		collection.remove(query);
 	}
 
-	public void updateSubIds(DBCollection collection, JSONObject id) throws JSONException {
-		ArrayList<DBObject> objs = getSubThreads(collection, (String) id.get("thread_id"));
-		DBCursor cursorGather = collection.find(new BasicDBObject());
-		ArrayList<DBObject> subthreads = new ArrayList<>();
-		for (int i = 0; i < cursorGather.size(); i++) {
-			DBObject obj = cursorGather.next();
-			String thread = (String) id.get("thread_id");
-			DBObject query = new BasicDBObject("_id.thread_id", obj.get("thread_id"));
-			DBObject update = new BasicDBObject().append("$set", new BasicDBObject().append("_id.sub_id", i));
-			collection.update(query, update);
-		}
-	}
 
+	/**
+	 * Remove all contexts that may be in use (used by frontend when page is reloaded etc.)
+	 */
 	public void resetAll() {
 		globals.context = none;
 	}

@@ -1,10 +1,8 @@
 package com.ChatbotController;
 
 import com.example.chatbot.ChatbotApplication;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @Controller
 public class ChatbotController {
@@ -45,13 +42,6 @@ public class ChatbotController {
     @RequestMapping(value = "/index", method = RequestMethod.POST)
     public ResponseEntity<JSONresponse> getSearchResultViaAjax(@RequestBody String msg1) throws JSONException {
 
-
-        /*
-        TODO:  - send data to chatbot application
-               - Make sure message is processed correctly
-               - send back json
-               - Process and format string in js
-         */
 
         System.out.println("message received: " + msg1);
 
@@ -149,12 +139,10 @@ public class ChatbotController {
     public ResponseEntity<JSONresponse> deleteThreadViaAjax(@RequestBody String threads) throws JSONException {
 
         JSONArray jsonThreads = new JSONArray(threads);
-        JSONObject testobj = jsonThreads.getJSONObject(0);
         for (int j = 0; j < jsonThreads.length(); j++) {
             JSONObject object = jsonThreads.getJSONObject(j);
             app.adminDelete(collection, object);
         }
-        app.updateSubIds(collection, testobj);
 
 
         JSONresponse response = new JSONresponse("success", null);
